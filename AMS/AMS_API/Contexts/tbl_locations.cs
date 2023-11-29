@@ -18,6 +18,14 @@ namespace AMS_API.Contexts
         public string country { get; set; }
         [Column(TypeName = "varchar(10)")]
         public string zip { get; set; }
-
+        [Column(TypeName = "varchar(-1)")]
+        public string details { get; set; }
+        public DateTime? created_at { get; set; }
+        public int? created_by { get; set; }
+        public DateTime? updated_at { get; set; }
+        public int? updated_by { get; set; }
+        public DateTime? deleted_at { get; set; }
+        public int? deleted_by { get; set; }
+        public bool? deleted { get; set; }
     }
 }

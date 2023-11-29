@@ -3,22 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AMS_API.Contexts
 {
-    [Table("tbl_user_details")]
-    public class tbl_user_details
+    public class tbl_asset_types
     {
         [Key]
-        public int id_user_detail { get; set; }
-        public int id_user { get; set; }
+        public int id_type { get; set; }
         [Column(TypeName = "varchar(100)")]
-        public string first_name { get; set; }
-        [Column(TypeName = "varchar(100)")]
-        public string last_name { get; set; }
-        [Column(TypeName = "varchar(20)")]
-        public string phone_number { get; set; }
+        public string name_type { get; set; }
         [Column(TypeName = "varchar(-1)")]
-        public string about { get; set; }
-        public int? id_location { get; set; }
-        public int? id_company { get; set; }
+        public string desc_type { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }
         public DateTime? updated_at { get; set; }

@@ -41,12 +41,12 @@ namespace AMS_API.Controllers
                 var user = await context.tbl_users.Where(f => f.email == req.email || f.username == req.username).FirstOrDefaultAsync();
                 if (user == null)
                 {
-                    return StatusCode(401, "Login failed");
+                    return StatusCode(401, "Username/Email or password is incorrect");
                 }
 
                 if (!BCrypt.Net.BCrypt.Verify(req.password, user.password))
                 {
-                    throw new Exception("Username/Email or password is incorrect");
+                    return StatusCode(401, "Username/Email or password is incorrect");
                 }
 
                 user.last_login = DateTime.Now;

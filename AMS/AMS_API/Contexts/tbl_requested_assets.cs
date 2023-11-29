@@ -3,19 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AMS_API.Contexts
 {
-    [Table("tbl_users")]
-    public class tbl_users
+    public class tbl_requested_assets
     {
         [Key]
-        public int id_user { get; set; }
-        [Column(TypeName = "varchar(100)")]
-        public string username { get; set; }
-        [Column(TypeName = "varchar(100)")]
-        public string email { get; set; }
-        [Column(TypeName = "varchar(100)")]
-        public string password { get; set; }
-        public DateTime? last_login { get; set; }
-        public bool? activated { get; set; }
+        public int id_request { get; set; }
+        public int id_asset { get; set; }
+        public int? id_user { get; set; }
+        public int? id_company { get; set; }
+        public int? requested_at { get; set; }
+        public int? denied_at { get; set; }
+        [Column(TypeName = "varchar(-1)")]
+        public string notes { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }
         public DateTime? updated_at { get; set; }
