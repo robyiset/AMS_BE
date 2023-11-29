@@ -1,12 +1,11 @@
 CREATE TABLE tbl_users
 (
 	id_user INT PRIMARY KEY,
-	first_name VARCHAR(100) not null,
-	last_name VARCHAR(100),
 	username varchar(100) unique not null,
 	email varchar(100) unique not null,
 	password varchar(100) not null,
 	last_login datetime,
+	activated bit default 1,
 	created_at datetime default GETDATE(),
 	created_by int,
 	updated_at datetime,
@@ -24,7 +23,15 @@ create table tbl_locations
 	state varchar(100),
 	country varchar(100),
 	zip varchar(10),
+	details varchar(max),
 
+	created_at datetime default GETDATE(),
+	created_by int,
+	updated_at datetime,
+	updated_by int,
+	deleted_at datetime,
+	deleted_by int,
+	deleted bit default 0,
 );
 
 create table tbl_companies
@@ -53,6 +60,8 @@ CREATE TABLE tbl_user_details
 (
 	id_user_detail INT PRIMARY KEY,
 	id_user int not null,
+	first_name VARCHAR(100) not null,
+	last_name VARCHAR(100),
 	phone_number VARCHAR(20),
 	about VARCHAR(max),
 
@@ -91,7 +100,7 @@ create table tbl_asset_waranties
 (
 	id_warranty int primary key,
 	warranty_name varchar(100),
-	warranty_date_until datetime,
+	warranty_expiration datetime,
 
 	created_at datetime default GETDATE(),
 	created_by int,
@@ -118,7 +127,7 @@ create table tbl_assets
 	depreciate bit not null default 0,
 
 	requestable bit not null default 0,
-	consumeable bit not null default 0,
+	consumable bit not null default 0,
 
 	id_location int,
 	id_company int,
@@ -166,7 +175,7 @@ create table tbl_requested_assets
 
 create table tbl_consumable_assets
 (
-	id_consumable int primary key,
+	id_usage int primary key,
 	id_asset int not null,
 	id_user int,
 	id_company int,
