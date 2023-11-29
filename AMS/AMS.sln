@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34221.43
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMS_API", "AMS_API\AMS_API.csproj", "{BB87C72E-B964-40F9-8438-649A12059FDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASM_Service_Notification", "ASM_Service_Notification\ASM_Service_Notification.csproj", "{EA79FE1B-7979-419C-96AE-9E7CB6540FEC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB87C72E-B964-40F9-8438-649A12059FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB87C72E-B964-40F9-8438-649A12059FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB87C72E-B964-40F9-8438-649A12059FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB87C72E-B964-40F9-8438-649A12059FDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA79FE1B-7979-419C-96AE-9E7CB6540FEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA79FE1B-7979-419C-96AE-9E7CB6540FEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA79FE1B-7979-419C-96AE-9E7CB6540FEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA79FE1B-7979-419C-96AE-9E7CB6540FEC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C05FF2A8-5907-4312-8612-7C9354A9B2C1}
+	EndGlobalSection
+EndGlobal

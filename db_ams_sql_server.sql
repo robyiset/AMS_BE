@@ -54,7 +54,7 @@ CREATE TABLE tbl_user_details
 	id_user_detail INT PRIMARY KEY,
 	id_user int not null,
 	phone_number VARCHAR(20),
-	address VARCHAR(max),
+	about VARCHAR(max),
 
 	id_location int,
 	id_company int,
