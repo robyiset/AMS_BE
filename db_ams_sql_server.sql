@@ -262,6 +262,7 @@ create table tbl_licences
 	license_name varchar(100) not null,
 	license_desc varchar(max),
 	license_account varchar(100),
+	license_version varchar(50),
 	id_user int,
 	id_asset int,
 

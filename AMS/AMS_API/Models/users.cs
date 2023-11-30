@@ -25,18 +25,19 @@ namespace AMS_API.Models
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string repeat_password { get; set; }
     }
-    public class user_details
-    {
-        public profile user_profile { get; set; }
-        public locations user_location { get; set; }
-        public companies user_company { get; set; }
-    }
     public class profile
     {
+        public int id_user { get; set; }
         [Required(ErrorMessage = "First name is required")]
         public string first_name { get; set; }
         public string last_name { get; set; }
         public string about { get; set; }
         public string phone_number { get; set; }
+    }
+    public class user_details
+    {
+        public profile user_profile { get; set; }
+        public locations user_location { get; set; }
+        public companies user_company { get; set; }
     }
 }

@@ -12,5 +12,6 @@ namespace AMS_API.Models
         public string email { get; set; }
         public string contact { get; set; }
         public string url { get; set; }
+        public int id_user { get; set; }
     }
 }
