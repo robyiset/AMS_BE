@@ -10,7 +10,7 @@ namespace AMS_API.Contexts.Tables
         [Column(TypeName = "varchar(100)")]
         public string name_type { get; set; }
         [Column(TypeName = "varchar(-1)")]
-        public string desc_type { get; set; }
+        public string? desc_type { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }
         public DateTime? updated_at { get; set; }

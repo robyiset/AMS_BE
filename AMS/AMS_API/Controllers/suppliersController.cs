@@ -10,10 +10,10 @@ namespace AMS_API.Controllers
     [ApiController]
     public class suppliersController : ControllerBase
     {
-        private readonly companiesService service;
+        private readonly suppliersService service;
         public suppliersController(IConfiguration configuration)
         {
-            service = new companiesService(configuration);
+            service = new suppliersService(configuration);
         }
         [Authorize]
         [HttpGet]
@@ -30,7 +30,7 @@ namespace AMS_API.Controllers
         }
         [Authorize]
         [HttpPost("newData")]
-        public async Task<IActionResult> newData(companies req)
+        public async Task<IActionResult> newData(suppliers req)
         {
             if (!ModelState.IsValid)
             {
@@ -65,7 +65,7 @@ namespace AMS_API.Controllers
         }
         [Authorize]
         [HttpPut("updateData")]
-        public async Task<IActionResult> updateData(companies req)
+        public async Task<IActionResult> updateData(suppliers req)
         {
             if (!ModelState.IsValid)
             {
@@ -134,7 +134,7 @@ namespace AMS_API.Controllers
         }
         [Authorize]
         [HttpPut("deleteData")]
-        public async Task<IActionResult> deleteData(companies req)
+        public async Task<IActionResult> deleteData(suppliers req)
         {
             if (!ModelState.IsValid)
             {

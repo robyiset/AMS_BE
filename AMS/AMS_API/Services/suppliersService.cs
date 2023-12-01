@@ -19,15 +19,32 @@ namespace AMS_API.Services
         {
             using (var context = new AMSDbContext(_configuration))
             {
-                return await context.tbl_suppliers.Where(f => f.deleted == false && f.supplier_name.ToLower().Contains(search.ToLower())).Select(f => new suppliers
+                if (string.IsNullOrEmpty(search))
                 {
-                    id_supplier = f.id_supplier,
-                    supplier_name = f.supplier_name,
-                    phone = f.phone,
-                    email = f.email,
-                    contact = f.contact,
-                    url = f.url,
-                }).ToListAsync();
+                    return await context.tbl_suppliers.Select(f => new suppliers
+                    {
+                        id_supplier = f.id_supplier,
+                        supplier_name = f.supplier_name,
+                        phone = f.phone,
+                        email = f.email,
+                        contact = f.contact,
+                        url = f.url,
+                    }).ToListAsync();
+                }
+                else
+                {
+                    search = search.ToLower();
+                    return await context.tbl_suppliers.Where(f => f.deleted == false && f.supplier_name.ToLower().Contains(search)).Select(f => new suppliers
+                    {
+                        id_supplier = f.id_supplier,
+                        supplier_name = f.supplier_name,
+                        phone = f.phone,
+                        email = f.email,
+                        contact = f.contact,
+                        url = f.url,
+                    }).ToListAsync();
+                }
+                
             }
         }
         public async Task<returnService> newData(suppliers req)

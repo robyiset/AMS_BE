@@ -57,7 +57,21 @@ namespace AMS_API.Controllers
         {
             try
             {
-                return Ok(await service.getUsers(search));
+                var data = await service.getUsers(search);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [Authorize]
+        [HttpGet("getDetailUser")]
+        public async Task<IActionResult> getDetailUser(string? search = null)
+        {
+            try
+            {
+                return Ok(await service.getDetailUser(search));
             }
             catch (Exception ex)
             {

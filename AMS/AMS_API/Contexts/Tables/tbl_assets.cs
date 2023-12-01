@@ -12,7 +12,7 @@ namespace AMS_API.Contexts.Tables
         [Column(TypeName = "varchar(100)")]
         public string asset_name { get; set; }
         [Column(TypeName = "varchar(-1)")]
-        public string asset_desc { get; set; }
+        public string? asset_desc { get; set; }
         public int? id_type { get; set; }
         public int? id_user { get; set; }
         public DateTime? purchase_date { get; set; }
@@ -25,7 +25,7 @@ namespace AMS_API.Contexts.Tables
         public int? id_company { get; set; }
         public int? id_warranty { get; set; }
         [Column(TypeName = "varchar(100)")]
-        public string status { get; set; }
+        public string? status { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }
         public DateTime? updated_at { get; set; }

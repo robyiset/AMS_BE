@@ -12,11 +12,11 @@ namespace AMS_API.Contexts.Tables
         [Column(TypeName = "varchar(100)")]
         public string first_name { get; set; }
         [Column(TypeName = "varchar(100)")]
-        public string last_name { get; set; }
+        public string? last_name { get; set; }
         [Column(TypeName = "varchar(20)")]
-        public string phone_number { get; set; }
+        public string? phone_number { get; set; }
         [Column(TypeName = "varchar(-1)")]
-        public string about { get; set; }
+        public string? about { get; set; }
         public int? id_location { get; set; }
         public int? id_company { get; set; }
         public DateTime? created_at { get; set; }

@@ -65,7 +65,7 @@ namespace AMS_API.Controllers
                     configuration["Jwt:Issuer"],
                     configuration["Jwt:Audience"],
                     claims,
-                    expires: DateTime.UtcNow.AddHours(1),
+                    expires: DateTime.UtcNow.AddHours(3),
                     signingCredentials: login
                     );
                 return Ok(new { user.username, user.email, token = new JwtSecurityTokenHandler().WriteToken(token) });
@@ -76,20 +76,20 @@ namespace AMS_API.Controllers
             }
         }
 
-        //[Authorize]
-        //[HttpGet("logout")]
-        //public async Task<IActionResult> logout()
-        //{
-        //    try
-        //    {
-        //        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        [Authorize]
+        [HttpGet("logout")]
+        public async Task<IActionResult> logout()
+        {
+            try
+            {
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-        //        return Ok("Logged out successfully");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, "Failed to logout");
-        //    }
-        //}
+                return Ok("Logged out successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Failed to logout");
+            }
+        }
     }
 }

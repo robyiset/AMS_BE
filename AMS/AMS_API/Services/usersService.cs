@@ -20,10 +20,34 @@ namespace AMS_API.Services
         {
             using (var context = new AMSDbContext(_configuration))
             {
-                string _search = search.ToLower();
-                return await context.vw_users.Where(f => f.username.ToLower().Contains(_search) || 
-                f.email.ToLower().Contains(_search) || 
-                (f.first_name + " " + f.last_name).ToLower().Contains(_search)).ToListAsync();
+                if (string.IsNullOrEmpty(search))
+                {
+                    return await context.vw_users.ToListAsync();
+                }
+                else
+                {
+                    search = search.ToLower();
+                    return await context.vw_users.Where(f => string.IsNullOrEmpty(search) ||
+                    f.username.ToLower().Contains(search) || f.email.ToLower().Contains(search) ||
+                    (f.first_name + " " + f.last_name).ToLower().Contains(search)).ToListAsync();
+                }
+            }
+        }
+        public async Task<List<vw_user_details>> getDetailUser(string search)
+        {
+            using (var context = new AMSDbContext(_configuration))
+            {
+                if (string.IsNullOrEmpty(search))
+                {
+                    return await context.vw_user_details.ToListAsync();
+                }
+                else
+                {
+                    string _search = string.IsNullOrEmpty(search) ? "" : search.ToLower();
+                    return await context.vw_user_details.Where(f => f.username.ToLower().Contains(_search) ||
+                    f.email.ToLower().Contains(_search) ||
+                    (f.first_name + " " + f.last_name).ToLower().Contains(_search)).ToListAsync();
+                }
             }
         }
         public async Task<returnService> register(register req)

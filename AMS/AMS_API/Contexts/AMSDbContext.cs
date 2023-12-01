@@ -1,6 +1,7 @@
 ﻿using AMS_API.Contexts.Tables;
 using AMS_API.Contexts.Views;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 
 namespace AMS_API.Contexts
 {
@@ -18,6 +19,37 @@ namespace AMS_API.Contexts
 
             options.UseSqlServer(connectionString);
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<tbl_users>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_users>().Property(b => b.activated).HasDefaultValue(true);
+            modelBuilder.Entity<tbl_users>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_user_details>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_user_details>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_companies>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_companies>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_locations>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_locations>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_assets>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_assets>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_asset_types>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_asset_types>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_asset_waranties>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_asset_waranties>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_requested_assets>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_requested_assets>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_consumable_assets>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_consumable_assets>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_asset_maintenances>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_asset_maintenances>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_asset_logs>().Property(b => b.log_date).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_licences>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_licences>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_suppliers>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_suppliers>().Property(b => b.deleted).HasDefaultValue(false);
+            modelBuilder.Entity<tbl_suppliers>().Property(b => b.created_at).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<tbl_suppliers>().Property(b => b.deleted).HasDefaultValue(false);
+        }
 
         public DbSet<tbl_users> tbl_users { get; set; }
         public DbSet<tbl_user_details> tbl_user_details { get; set; }
@@ -33,6 +65,8 @@ namespace AMS_API.Contexts
         public DbSet<tbl_licences> tbl_licences { get; set; }
         public DbSet<tbl_suppliers> tbl_suppliers { get; set; }
         public DbSet<vw_users> vw_users { get; set; }
+        public DbSet<vw_user_details> vw_user_details { get; set; }
+        public DbSet<vw_companies> vw_companies { get; set; }
         
     }
 }

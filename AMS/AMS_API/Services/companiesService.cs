@@ -1,9 +1,8 @@
 ﻿using AMS_API.Contexts;
 using AMS_API.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Numerics;
-using System;
 using AMS_API.Contexts.Tables;
+using AMS_API.Contexts.Views;
 
 namespace AMS_API.Services
 {
@@ -17,19 +16,19 @@ namespace AMS_API.Services
             _configuration = configuration;
             _locationService = new locationsServices();
         }
-        public async Task<List<companies>> getData(string search)
+        public async Task<List<vw_companies>> getData(string search)
         {
             using (var context = new AMSDbContext(_configuration))
             {
-                return await context.tbl_companies.Where(f => f.deleted == false && f.company_name.ToLower().Contains(search.ToLower())).Select(f => new companies 
-                { 
-                    id_company = f.id_company, 
-                    company_name = f.company_name,  
-                    phone = f.phone,
-                    email = f.email,
-                    contact = f.contact,
-                    url = f.url,
-                }).ToListAsync();
+                if (string.IsNullOrEmpty(search))
+                {
+                    return await context.vw_companies.ToListAsync();
+                }
+                else
+                {
+                    search = search.ToLower();
+                    return await context.vw_companies.Where(f => f.company_name.ToLower().Contains(search)).ToListAsync();
+                }
             }
         }
         public async Task<returnService> newData(companies req)

@@ -10,11 +10,11 @@ namespace AMS_API.Contexts.Tables
         [Column(TypeName = "varchar(100)")]
         public string license_name { get; set; }
         [Column(TypeName = "varchar(-1)")]
-        public string license_desc { get; set; }
+        public string? license_desc { get; set; }
         [Column(TypeName = "varchar(100)")]
-        public string license_account { get; set; }
+        public string? license_account { get; set; }
         [Column(TypeName = "varchar(50)")]
-        public string license_version { get; set; }
+        public string? license_version { get; set; }
         public int? id_user { get; set; }
         public int? id_asset { get; set; }
         public DateTime? purchase_date { get; set; }

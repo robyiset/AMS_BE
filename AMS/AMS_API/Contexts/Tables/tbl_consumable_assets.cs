@@ -12,7 +12,7 @@ namespace AMS_API.Contexts.Tables
         public int? id_company { get; set; }
         public int? id_location { get; set; }
         [Column(TypeName = "varchar(-1)")]
-        public string notes { get; set; }
+        public string? notes { get; set; }
         public DateTime? purchase_date { get; set; }
         [Column(TypeName = "decimal(18,0)")]
         public decimal? purchase_cost { get; set; }

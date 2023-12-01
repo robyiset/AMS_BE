@@ -8,7 +8,7 @@ namespace AMS_API.Contexts.Tables
         [Key]
         public int id_warranty { get; set; }
         [Column(TypeName = "varchar(100)")]
-        public string warranty_name { get; set; }
+        public string? warranty_name { get; set; }
         public DateTime? warranty_expiration { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }

@@ -1,6 +1,6 @@
 CREATE TABLE tbl_users
 (
-	id_user INT PRIMARY KEY,
+	id_user INT IDENTITY(1,1) PRIMARY KEY,
 	username varchar(100) unique not null,
 	email varchar(100) unique not null,
 	password varchar(100) not null,
@@ -17,7 +17,7 @@ CREATE TABLE tbl_users
 
 create table tbl_locations
 (
-	id_location int primary key,
+	id_location INT IDENTITY(1,1) PRIMARY KEY,
 	address varchar(max),
 	city varchar(100),
 	state varchar(100),
@@ -36,7 +36,7 @@ create table tbl_locations
 
 create table tbl_companies
 (
-	id_company int primary key,
+	id_company INT IDENTITY(1,1) PRIMARY KEY,
 	company_name varchar(100) not null,
 	phone varchar(20),
 	email varchar(100),
@@ -58,7 +58,7 @@ create table tbl_companies
 
 CREATE TABLE tbl_user_details
 (
-	id_user_detail INT PRIMARY KEY,
+	id_user_detail INT IDENTITY(1,1) PRIMARY KEY,
 	id_user int not null,
 	first_name VARCHAR(100) not null,
 	last_name VARCHAR(100),
@@ -83,7 +83,7 @@ CREATE TABLE tbl_user_details
 
 create table tbl_asset_types
 (
-	id_type int PRIMARY KEY,
+	id_type INT IDENTITY(1,1) PRIMARY KEY,
 	name_type varchar(100) not null,
 	desc_type varchar(max),
 
@@ -98,7 +98,7 @@ create table tbl_asset_types
 
 create table tbl_asset_waranties
 (
-	id_warranty int primary key,
+	id_warranty INT IDENTITY(1,1) PRIMARY KEY,
 	warranty_name varchar(100),
 	warranty_expiration datetime,
 
@@ -113,7 +113,7 @@ create table tbl_asset_waranties
 
 create table tbl_assets
 (
-	id_asset INT PRIMARY KEY,
+	id_asset INT IDENTITY(1,1) PRIMARY KEY,
 	serial varchar(100) not null,
 	asset_name varchar(100) not null,
 	asset_desc varchar(max),
@@ -151,7 +151,7 @@ create table tbl_assets
 
 create table tbl_requested_assets
 (
-	id_request int primary key,
+	id_request INT IDENTITY(1,1) PRIMARY KEY,
 	id_asset int not null,
 	id_user int,
 	id_company int,
@@ -174,7 +174,7 @@ create table tbl_requested_assets
 
 create table tbl_consumable_assets
 (
-	id_usage int primary key,
+	id_usage INT IDENTITY(1,1) PRIMARY KEY,
 	id_asset int not null,
 	id_user int,
 	id_company int,
@@ -200,7 +200,7 @@ create table tbl_consumable_assets
 
 create table tbl_asset_maintenances
 (
-	id_maintenance int primary key,
+	id_maintenance INT IDENTITY(1,1) PRIMARY KEY,
 	id_asset int not null,
 	title varchar(100),
 	maintenance_desc varchar(max),
@@ -224,7 +224,7 @@ create table tbl_asset_maintenances
 
 create table tbl_asset_logs
 (
-	id_asset_log int primary key,
+	id_asset_log INT IDENTITY(1,1) PRIMARY KEY,
 	id_asset int not null,
 	action_desc varchar(max) not null,
 
@@ -235,7 +235,7 @@ create table tbl_asset_logs
 
 create table tbl_suppliers
 (
-	id_supplier int primary key,
+	id_supplier INT IDENTITY(1,1) PRIMARY KEY,
 	supplier_name varchar(100) not null,
 	phone varchar(20),
 	email varchar(100),
@@ -259,7 +259,7 @@ create table tbl_suppliers
 
 create table tbl_licences
 (
-	id_license int primary key,
+	id_license INT IDENTITY(1,1) PRIMARY KEY,
 	license_name varchar(100) not null,
 	license_desc varchar(max),
 	license_account varchar(100),
@@ -287,9 +287,11 @@ create table tbl_licences
 	CONSTRAINT fk_licenses_waranties FOREIGN KEY (id_warranty) REFERENCES tbl_asset_waranties(id_warranty),
 );
 
-ALTER VIEW vw_users AS(
+CREATE VIEW vw_users
+AS
+	(
 
-	select 
+	select
 		a.id_user,
 		a.username,
 		a.email,
@@ -297,7 +299,33 @@ ALTER VIEW vw_users AS(
 		b.last_name,
 		b.phone_number,
 		b.about
-	from tbl_users a 
-	left join tbl_user_details b on a.id_user = b.id_user
+	from tbl_users a
+		left join tbl_user_details b on a.id_user = b.id_user
 );
 
+
+create view vw_user_details
+as
+	(
+
+	select
+		a.id_user,
+		a.username,
+		a.email,
+		b.first_name,
+		b.last_name,
+		b.phone_number,
+		b.about,
+		c.company_name,
+		d.address,
+		d.city,
+		d.state,
+		d.country,
+		d.zip,
+		d.details
+	from tbl_users a
+		left join tbl_user_details b on a.id_user = b.id_user
+		left join tbl_companies c on b.id_company = c.id_company
+		left join tbl_locations d on b.id_location = d.id_location
+
+);
