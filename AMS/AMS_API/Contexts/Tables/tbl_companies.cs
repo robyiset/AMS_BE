@@ -18,7 +18,6 @@ namespace AMS_API.Contexts.Tables
         public string? contact { get; set; }
         [Column(TypeName = "varchar(-1)")]
         public string? url { get; set; }
-        public int? id_location { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }
         public DateTime? updated_at { get; set; }

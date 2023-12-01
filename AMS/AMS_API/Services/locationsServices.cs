@@ -18,6 +18,11 @@ namespace AMS_API.Services
                     state = req.state,
                     country = req.country,
                     zip = req.zip,
+                    id_user = req.id_user,
+                    id_company = req.id_company,
+                    id_supplier = req.id_supplier,
+                    id_asset = req.id_asset,
+                    id_usage = req.id_usage,
                     created_at = DateTime.Now,
                     created_by = id_user
                 };

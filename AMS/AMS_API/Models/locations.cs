@@ -12,5 +12,19 @@ namespace AMS_API.Models
         public string state { get; set; }
         public string country { get; set; }
         public string zip { get; set; }
+        public int? id_user { get; set; }
+        public int? id_company { get; set; }
+        public int? id_supplier { get; set; }
+        public int? id_asset { get; set; }
+        public int? id_usage { get; set; }
+    }
+    public class add_location
+    {
+        [Required(ErrorMessage = "Address is required")]
+        public string address { get; set; }
+        public string city { get; set; }
+        public string state { get; set; }
+        public string country { get; set; }
+        public string zip { get; set; }
     }
 }

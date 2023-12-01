@@ -26,6 +26,6 @@ namespace AMS_API.Models
     {
         [Required(ErrorMessage = "Id is required")]
         public int id_supplier { get; set; }
-        public locations location { get; set; }
+        public add_location location { get; set; }
     }
 }

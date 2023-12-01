@@ -17,7 +17,6 @@ namespace AMS_API.Contexts.Tables
         public string? phone_number { get; set; }
         [Column(TypeName = "varchar(-1)")]
         public string? about { get; set; }
-        public int? id_location { get; set; }
         public int? id_company { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }

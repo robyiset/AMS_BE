@@ -40,7 +40,7 @@ namespace AMS_API.Models
     {
         [Required(ErrorMessage = "id is required")]
         public int id_user { get; set; }
-        public locations location { get; set; }
+        public add_location location { get; set; }
 
     }
     public class user_company

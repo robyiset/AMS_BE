@@ -21,7 +21,6 @@ namespace AMS_API.Contexts.Tables
         public bool depreciate { get; set; }
         public bool requestable { get; set; }
         public bool consumable { get; set; }
-        public int? id_location { get; set; }
         public int? id_company { get; set; }
         public int? id_warranty { get; set; }
         [Column(TypeName = "varchar(100)")]

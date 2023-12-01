@@ -140,48 +140,31 @@ namespace AMS_API.Services
                 {
                     try
                     {
-                        int? id_location = await _locationService.createLocation(context, transaction, req.location, id_user);
-
-                        var user_profile = await context.tbl_user_details.Where(f => f.id_user == req.id_user).FirstOrDefaultAsync();
-                        if (user_profile != null && id_location != null)
-                        {
-                            var old_location = await context.tbl_locations.Where(f => f.id_location == user_profile.id_location).FirstOrDefaultAsync();
-                            if (old_location != null)
+                        int? id_location = await _locationService.createLocation(context, transaction, 
+                            new locations 
                             {
-                                context.tbl_locations.Remove(old_location);
-                            }
+                                address = req.location.address,
+                                city = req.location.city,
+                                state = req.location.state,
+                                country = req.location.country,
+                                zip = req.location.zip,
+                                id_user = req.id_user,
+                            },
+                            id_user);
 
-                            user_profile.id_location = id_location;
-                            user_profile.updated_at = DateTime.Now;
-                            user_profile.updated_by = id_user;
-                            await context.SaveChangesAsync();
+                        if (id_location == null || id_location == 0)
+                        {
+                            return new returnService { status = true, message = "Failed to update user address!" };
                         }
-
-                        await transaction.CommitAsync();
 
                         return new returnService { status = true, message = "User address updated successfully!" };
                     }
                     catch (Exception ex)
                     {
-                        await transaction.RollbackAsync();
                         //throw; 
                         return new returnService { status = false, message = ex.Message };
                     }
                 }
-                //int? id_location = null;
-                //var locations = new tbl_locations
-                //{
-                //    address = req.address,
-                //    city = req.city,
-                //    state = req.state,
-                //    country = req.country,
-                //    zip = req.zip,
-                //    created_at = DateTime.Now,
-                //    created_by = req.id_user
-                //};
-                //await context.tbl_locations.AddAsync(locations);
-                //await context.SaveChangesAsync();
-                //id_location = locations.id_location;
             }
         }
         public async Task<returnService> updateCompany(user_company req, int id_user)

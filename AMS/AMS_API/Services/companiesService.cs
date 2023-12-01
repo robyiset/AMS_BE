@@ -111,31 +111,27 @@ namespace AMS_API.Services
                 {
                     try
                     {
-
-                        int? id_location = await _locationService.createLocation(context, transaction, req.location, id_user);
-
-                        var data = await context.tbl_companies.Where(f => f.id_company == req.id_company).FirstOrDefaultAsync();
-                        if (data != null && id_location != null)
-                        {
-                            var old_location = await context.tbl_locations.Where(f => f.id_location == data.id_location).FirstOrDefaultAsync();
-                            if (old_location != null)
+                        int? id_location = await _locationService.createLocation(context, transaction,
+                            new locations
                             {
-                                context.tbl_locations.Remove(old_location);
-                            }
+                                address = req.location.address,
+                                city = req.location.city,
+                                state = req.location.state,
+                                country = req.location.country,
+                                zip = req.location.zip,
+                                id_company = req.id_company,
+                            },
+                            id_user);
 
-                            data.id_location = id_location;
-                            data.updated_at = DateTime.Now;
-                            data.updated_by = id_user;
-                            await context.SaveChangesAsync();
+                        if (id_location == null || id_location == 0)
+                        {
+                            return new returnService { status = true, message = "Failed to update company address!" };
                         }
 
-                        await transaction.CommitAsync();
-
-                        return new returnService { status = true, message = "Company address updated successfully!" };
+                        return new returnService { status = true, message = "company address updated successfully!" };
                     }
                     catch (Exception ex)
                     {
-                        await transaction.RollbackAsync();
                         //throw; 
                         return new returnService { status = false, message = ex.Message };
                     }
@@ -212,7 +208,6 @@ namespace AMS_API.Services
                 };
                 await context.tbl_companies.AddAsync(locations);
                 await context.SaveChangesAsync();
-                await transaction.CommitAsync();
                 return locations.id_company;
             }
             catch (Exception ex)

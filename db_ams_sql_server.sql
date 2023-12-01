@@ -18,12 +18,19 @@ CREATE TABLE tbl_users
 create table tbl_locations
 (
 	id_location INT IDENTITY(1,1) PRIMARY KEY,
+
 	address varchar(max),
 	city varchar(100),
 	state varchar(100),
 	country varchar(100),
 	zip varchar(10),
 	details varchar(max),
+
+	id_user int,
+	id_company int,
+	id_supplier int,
+	id_asset int,
+	id_usage INT,
 
 	created_at datetime default GETDATE(),
 	created_by int,
@@ -32,6 +39,12 @@ create table tbl_locations
 	deleted_at datetime,
 	deleted_by int,
 	deleted bit default 0,
+
+	CONSTRAINT fk_locations_users FOREIGN KEY (id_user) REFERENCES tbl_users(id_user),
+	CONSTRAINT fk_locations_companies FOREIGN KEY (id_company) REFERENCES tbl_companies(id_company),
+	CONSTRAINT fk_locations_suppliers FOREIGN KEY (id_user) REFERENCES tbl_users(id_supplier),
+	CONSTRAINT fk_locations_assets FOREIGN KEY (id_user) REFERENCES tbl_users(id_asset),
+	CONSTRAINT fk_locations_consumables FOREIGN KEY (id_usage) REFERENCES tbl_users(id_usage),
 );
 
 create table tbl_companies
@@ -43,8 +56,6 @@ create table tbl_companies
 	contact varchar(100),
 	url varchar(max),
 
-	id_location int,
-
 	created_at datetime default GETDATE(),
 	created_by int,
 	updated_at datetime,
@@ -52,8 +63,6 @@ create table tbl_companies
 	deleted_at datetime,
 	deleted_by int,
 	deleted bit default 0,
-
-	CONSTRAINT fk_companies_locations FOREIGN KEY (id_location) REFERENCES tbl_locations(id_location)
 );
 
 CREATE TABLE tbl_user_details
@@ -65,7 +74,6 @@ CREATE TABLE tbl_user_details
 	phone_number VARCHAR(20),
 	about VARCHAR(max),
 
-	id_location int,
 	id_company int,
 
 	created_at datetime default GETDATE(),
@@ -77,7 +85,6 @@ CREATE TABLE tbl_user_details
 	deleted bit default 0,
 
 	CONSTRAINT fk_users_user_details FOREIGN KEY (id_user) REFERENCES tbl_users(id_user),
-	CONSTRAINT fk_user_details_locations FOREIGN KEY (id_location) REFERENCES tbl_locations(id_location),
 	CONSTRAINT fk_user_details_company FOREIGN KEY (id_company) REFERENCES tbl_companies(id_company)
 );
 
@@ -128,7 +135,6 @@ create table tbl_assets
 	requestable bit not null default 0,
 	consumable bit not null default 0,
 
-	id_location int,
 	id_company int,
 	id_warranty int,
 
@@ -143,7 +149,6 @@ create table tbl_assets
 	deleted bit default 0,
 
 	CONSTRAINT fk_assets_asset_types FOREIGN KEY (id_type) REFERENCES tbl_asset_types(id_type),
-	CONSTRAINT fk_assets_locations FOREIGN KEY (id_location) REFERENCES tbl_locations(id_location),
 	CONSTRAINT fk_assets_companies FOREIGN KEY (id_company) REFERENCES tbl_companies(id_company),
 	CONSTRAINT fk_assets_assets_waranties FOREIGN KEY (id_warranty) REFERENCES tbl_asset_waranties(id_warranty),
 	CONSTRAINT fk_assets_users FOREIGN KEY (id_user) REFERENCES tbl_users(id_user),
@@ -178,7 +183,6 @@ create table tbl_consumable_assets
 	id_asset int not null,
 	id_user int,
 	id_company int,
-	id_location int,
 	notes varchar(max),
 
 	purchase_date datetime,
@@ -195,7 +199,6 @@ create table tbl_consumable_assets
 	CONSTRAINT fk_consumable_assets_asset FOREIGN KEY (id_asset) REFERENCES tbl_assets(id_asset),
 	CONSTRAINT fk_consumable_assets_users FOREIGN KEY (id_user) REFERENCES tbl_users(id_user),
 	CONSTRAINT fk_consumable_assets_companies FOREIGN KEY (id_company) REFERENCES tbl_companies(id_company),
-	CONSTRAINT fk_consumable_assets_locations FOREIGN KEY (id_location) REFERENCES tbl_locations(id_location),
 );
 
 create table tbl_asset_maintenances
@@ -242,7 +245,6 @@ create table tbl_suppliers
 	contact varchar(100),
 	url varchar(max),
 
-	id_location int,
 	id_company int,
 
 	created_at datetime default GETDATE(),
@@ -253,7 +255,6 @@ create table tbl_suppliers
 	deleted_by int,
 	deleted bit default 0,
 
-	CONSTRAINT fk_suppliers_locations FOREIGN KEY (id_location) REFERENCES tbl_locations(id_location),
 	CONSTRAINT fk_suppliers_companies FOREIGN KEY (id_company) REFERENCES tbl_companies(id_company)
 );
 
@@ -287,6 +288,8 @@ create table tbl_licences
 	CONSTRAINT fk_licenses_waranties FOREIGN KEY (id_warranty) REFERENCES tbl_asset_waranties(id_warranty),
 );
 
+GO
+
 CREATE VIEW vw_users
 AS
 	(
@@ -302,7 +305,7 @@ AS
 	from tbl_users a
 		left join tbl_user_details b on a.id_user = b.id_user
 );
-
+GO
 
 create view vw_user_details
 as
@@ -326,6 +329,30 @@ as
 	from tbl_users a
 		left join tbl_user_details b on a.id_user = b.id_user
 		left join tbl_companies c on b.id_company = c.id_company
-		left join tbl_locations d on b.id_location = d.id_location
+		left join tbl_locations d on b.id_company = d.id_company
 
 );
+
+GO
+
+
+CREATE view vw_companies
+as
+	(
+	select
+		a.id_company,
+		a.company_name,
+		a.phone,
+		a.email,
+		a.contact,
+		a.url,
+		b.address,
+		b.city,
+		b.state,
+		b.country,
+		b.zip
+	from tbl_companies a
+		left join tbl_locations b on a.id_company = b.id_company
+	where a.deleted = 0
+	);
+GO
