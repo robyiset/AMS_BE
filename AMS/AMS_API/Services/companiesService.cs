@@ -3,6 +3,7 @@ using AMS_API.Models;
 using Microsoft.EntityFrameworkCore;
 using AMS_API.Contexts.Tables;
 using AMS_API.Contexts.Views;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AMS_API.Services
 {
@@ -102,7 +103,7 @@ namespace AMS_API.Services
                 }
             }
         }
-        public async Task<returnService> updateAddress(locations req, int id_company, int id_user)
+        public async Task<returnService> updateAddress(company_location req, int id_user)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -111,13 +112,16 @@ namespace AMS_API.Services
                     try
                     {
 
-                        int? id_location = await _locationService.createLocation(context, transaction, req, id_user);
+                        int? id_location = await _locationService.createLocation(context, transaction, req.location, id_user);
 
-                        var data = await context.tbl_companies.Where(f => f.id_company == id_company).FirstOrDefaultAsync();
+                        var data = await context.tbl_companies.Where(f => f.id_company == req.id_company).FirstOrDefaultAsync();
                         if (data != null && id_location != null)
                         {
                             var old_location = await context.tbl_locations.Where(f => f.id_location == data.id_location).FirstOrDefaultAsync();
-                            context.tbl_locations.Remove(old_location);
+                            if (old_location != null)
+                            {
+                                context.tbl_locations.Remove(old_location);
+                            }
 
                             data.id_location = id_location;
                             data.updated_at = DateTime.Now;
@@ -194,6 +198,28 @@ namespace AMS_API.Services
                         return new returnService { status = false, message = ex.Message };
                     }
                 }
+            }
+        }
+        public async Task<int?> AddCompanyNameOnly(AMSDbContext context, IDbContextTransaction? transaction, string name, int id_user)
+        {
+            try
+            {
+                var locations = new tbl_companies
+                {
+                    company_name = name,
+                    created_at = DateTime.Now,
+                    created_by = id_user
+                };
+                await context.tbl_companies.AddAsync(locations);
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return locations.id_company;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw;
+                //return null;
             }
         }
     }

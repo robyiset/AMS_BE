@@ -27,7 +27,7 @@ namespace AMS_API.Controllers
 
             if (req.password != req.repeat_password || req == null)
             {
-                return StatusCode(401, "Please check your password");
+                return BadRequest( "Please check your password");
             }
             try
             {
@@ -36,13 +36,13 @@ namespace AMS_API.Controllers
                     returnService result = await service.register(req);
                     if (!result.status)
                     {
-                        return StatusCode(401, result.message);
+                        return BadRequest( result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return StatusCode(401, "Failed to create user");
+                    return BadRequest( "Failed to create user");
                 }
                 
             }
@@ -89,7 +89,7 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return StatusCode(401, "User ID not found in token");
+                return BadRequest( "User ID not found in token");
             }
             try
             {
@@ -99,13 +99,13 @@ namespace AMS_API.Controllers
                     returnService result = await service.udpateProfile(req);
                     if (!result.status)
                     {
-                        return StatusCode(401, result.message);
+                        return BadRequest( result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return StatusCode(401, "Failed to update profile user");
+                    return BadRequest( "Failed to update profile user");
                 }
             }
             catch (Exception ex)
@@ -116,7 +116,7 @@ namespace AMS_API.Controllers
 
         [Authorize]
         [HttpPut("updateAddress")]
-        public async Task<IActionResult> updateAddress([FromBody] locations req)
+        public async Task<IActionResult> updateAddress([FromBody] user_location req)
         {
             if (!ModelState.IsValid)
             {
@@ -125,7 +125,7 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return StatusCode(401, "User ID not found in token");
+                return BadRequest( "User ID not found in token");
             }
             try
             {
@@ -134,13 +134,48 @@ namespace AMS_API.Controllers
                     returnService result = await service.updateAddress(req, Convert.ToInt32(id_user.Value));
                     if (!result.status)
                     {
-                        return StatusCode(401, result.message);
+                        return BadRequest( result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return StatusCode(401, "Failed to update user address");
+                    return BadRequest( "Failed to update user address");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpPut("updateCompany")]
+        public async Task<IActionResult> updateCompany([FromBody] user_company req)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
+            if (id_user == null && !int.TryParse(id_user.Value, out int userId))
+            {
+                return BadRequest("User ID not found in token");
+            }
+            try
+            {
+                if (req != null)
+                {
+                    returnService result = await service.updateCompany(req, Convert.ToInt32(id_user.Value));
+                    if (!result.status)
+                    {
+                        return BadRequest(result.message);
+                    }
+                    return Ok(result.message);
+                }
+                else
+                {
+                    return BadRequest("Failed to update user address");
                 }
             }
             catch (Exception ex)
@@ -160,12 +195,12 @@ namespace AMS_API.Controllers
         //    var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
         //    if (id_user == null && !int.TryParse(id_user.Value, out int userId))
         //    {
-        //        return StatusCode(401, "User ID not found in token");
+        //        return BadRequest( "User ID not found in token");
         //    }
 
         //    if (id_activate_user == Convert.ToInt32(id_user.Value) || id_activate_user == 0)
         //    {
-        //        return StatusCode(401, "User ID not found");
+        //        return BadRequest( "User ID not found");
         //    }
         //    try
         //    {
@@ -179,7 +214,7 @@ namespace AMS_API.Controllers
         //        }
         //        else
         //        {
-        //            return StatusCode(401, "User ID not found");
+        //            return BadRequest( "User ID not found");
         //        }
         //        return Ok("User activated!");
         //    }

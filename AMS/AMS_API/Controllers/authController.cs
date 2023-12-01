@@ -34,19 +34,21 @@ namespace AMS_API.Controllers
 
             if ((string.IsNullOrEmpty(req.username) && string.IsNullOrEmpty(req.password)) || (string.IsNullOrEmpty(req.email) && string.IsNullOrEmpty(req.password))) 
             {
-                return StatusCode(401, "Login failed");
+                return BadRequest( "Login failed");
             }
             try
             {
-                var user = await context.tbl_users.Where(f => f.email == req.email || f.username == req.username).FirstOrDefaultAsync();
+                var user = !string.IsNullOrEmpty(req.username) && !string.IsNullOrEmpty(req.email) ? 
+                    await context.tbl_users.Where(f => f.email == req.email && f.username == req.username).FirstOrDefaultAsync() :
+                    await context.tbl_users.Where(f => f.email == req.email || f.username == req.username).FirstOrDefaultAsync();
                 if (user == null)
                 {
-                    return StatusCode(401, "Username/Email or password is incorrect");
+                    return BadRequest( "Username/Email or password is incorrect");
                 }
 
                 if (!BCrypt.Net.BCrypt.Verify(req.password, user.password))
                 {
-                    return StatusCode(401, "Username/Email or password is incorrect");
+                    return BadRequest( "Username/Email or password is incorrect");
                 }
 
                 user.last_login = DateTime.Now;

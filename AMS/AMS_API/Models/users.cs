@@ -36,6 +36,19 @@ namespace AMS_API.Models
         [RegularExpression(@"^\+?[0-9]{10,15}$", ErrorMessage = "Invalid phone number")]
         public string phone_number { get; set; }
     }
+    public class user_location
+    {
+        [Required(ErrorMessage = "id is required")]
+        public int id_user { get; set; }
+        public locations location { get; set; }
+
+    }
+    public class user_company
+    {
+        [Required(ErrorMessage = "id is required")]
+        public int id_user { get; set; }
+        public SelectOrAddCompany company { get; set; }
+    }
     public class user_details
     {
         public profile user_profile { get; set; }

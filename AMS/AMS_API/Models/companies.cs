@@ -14,4 +14,15 @@ namespace AMS_API.Models
         public string url { get; set; }
         public int id_user { get; set; }
     }
+    public class company_location
+    {
+        [Required(ErrorMessage = "Id is required")]
+        public int id_company { get; set; }
+        public locations location { get; set; }
+    }
+    public class SelectOrAddCompany
+    {
+        public int id_company { get; set; }
+        public string company_name { get; set; }
+    }
 }

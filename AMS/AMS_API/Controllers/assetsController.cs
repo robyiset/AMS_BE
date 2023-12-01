@@ -39,7 +39,7 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return StatusCode(401, "User ID not found in token");
+                return BadRequest( "User ID not found in token");
             }
             try
             {
@@ -49,13 +49,13 @@ namespace AMS_API.Controllers
                     returnService result = await service.newData(req);
                     if (!result.status)
                     {
-                        return StatusCode(401, result.message);
+                        return BadRequest( result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return StatusCode(401, "Failed to create new supplier");
+                    return BadRequest( "Failed to create new supplier");
                 }
             }
             catch (Exception ex)

@@ -39,7 +39,7 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return StatusCode(401, "User ID not found in token");
+                return BadRequest( "User ID not found in token");
             }
             try
             {
@@ -49,13 +49,13 @@ namespace AMS_API.Controllers
                     returnService result = await service.newData(req);
                     if (!result.status)
                     {
-                        return StatusCode(401, result.message);
+                        return BadRequest( result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return StatusCode(401, "Failed to create new supplier");
+                    return BadRequest( "Failed to create new supplier");
                 }
             }
             catch (Exception ex)
@@ -74,7 +74,7 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return StatusCode(401, "User ID not found in token");
+                return BadRequest( "User ID not found in token");
             }
             try
             {
@@ -84,13 +84,13 @@ namespace AMS_API.Controllers
                     returnService result = await service.updateData(req);
                     if (!result.status)
                     {
-                        return StatusCode(401, result.message);
+                        return BadRequest( result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return StatusCode(401, "Failed to update supplier");
+                    return BadRequest( "Failed to update supplier");
                 }
             }
             catch (Exception ex)
@@ -100,7 +100,7 @@ namespace AMS_API.Controllers
         }
         [Authorize]
         [HttpPut("updateAddress")]
-        public async Task<IActionResult> updateAddress(locations req, int id_company)
+        public async Task<IActionResult> updateAddress([FromBody] supplier_location req)
         {
             if (!ModelState.IsValid)
             {
@@ -109,22 +109,22 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return StatusCode(401, "User ID not found in token");
+                return BadRequest( "User ID not found in token");
             }
             try
             {
                 if (req != null)
                 {
-                    returnService result = await service.updateAddress(req, id_company, Convert.ToInt32(id_user.Value));
+                    returnService result = await service.updateAddress(req, Convert.ToInt32(id_user.Value));
                     if (!result.status)
                     {
-                        return StatusCode(401, result.message);
+                        return BadRequest( result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return StatusCode(401, "Failed to update supplier address");
+                    return BadRequest( "Failed to update supplier address");
                 }
             }
             catch (Exception ex)
@@ -143,7 +143,7 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return StatusCode(401, "User ID not found in token");
+                return BadRequest( "User ID not found in token");
             }
             try
             {
@@ -153,13 +153,13 @@ namespace AMS_API.Controllers
                     returnService result = await service.deleteData(req);
                     if (!result.status)
                     {
-                        return StatusCode(401, result.message);
+                        return BadRequest( result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return StatusCode(401, "Failed to delete supplier");
+                    return BadRequest( "Failed to delete supplier");
                 }
             }
             catch (Exception ex)
@@ -178,7 +178,7 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return StatusCode(401, "User ID not found in token");
+                return BadRequest( "User ID not found in token");
             }
             try
             {
@@ -187,13 +187,13 @@ namespace AMS_API.Controllers
                     returnService result = await service.removeData(id_supplier);
                     if (!result.status)
                     {
-                        return StatusCode(401, result.message);
+                        return BadRequest( result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return StatusCode(401, "Failed to remove supplier");
+                    return BadRequest( "Failed to remove supplier");
                 }
             }
             catch (Exception ex)

@@ -9,11 +9,13 @@ namespace AMS_API.Services
     {
         private readonly IConfiguration _configuration;
         private readonly locationsServices _locationService;
+        private companiesService _companiesService;
 
         public suppliersService(IConfiguration configuration)
         {
             _configuration = configuration;
             _locationService = new locationsServices();
+            _companiesService = new companiesService(configuration);
         }
         public async Task<List<suppliers>> getData(string search)
         {
@@ -118,7 +120,7 @@ namespace AMS_API.Services
                 }
             }
         }
-        public async Task<returnService> updateAddress(locations req, int id_supplier, int id_user)
+        public async Task<returnService> updateAddress(supplier_location req, int id_user)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -127,13 +129,16 @@ namespace AMS_API.Services
                     try
                     {
 
-                        int? id_location = await _locationService.createLocation(context, transaction, req, id_user);
+                        int? id_location = await _locationService.createLocation(context, transaction, req.location, id_user);
 
-                        var data = await context.tbl_suppliers.Where(f => f.id_supplier == id_supplier).FirstOrDefaultAsync();
+                        var data = await context.tbl_suppliers.Where(f => f.id_supplier == req.id_supplier).FirstOrDefaultAsync();
                         if (data != null && id_location != null)
                         {
                             var old_location = await context.tbl_locations.Where(f => f.id_location == data.id_location).FirstOrDefaultAsync();
-                            context.tbl_locations.Remove(old_location);
+                            if (old_location != null)
+                            {
+                                context.tbl_locations.Remove(old_location);
+                            }
 
                             data.id_location = id_location;
                             data.updated_at = DateTime.Now;
@@ -144,6 +149,52 @@ namespace AMS_API.Services
                         await transaction.CommitAsync();
 
                         return new returnService { status = true, message = "supplier address updated successfully!" };
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        //throw; 
+                        return new returnService { status = false, message = ex.Message };
+                    }
+                }
+            }
+        }
+        public async Task<returnService> updateCompany(supplier_company req, int id_user)
+        {
+            using (var context = new AMSDbContext(_configuration))
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        if ((req.company.id_company > 0 && !string.IsNullOrEmpty(req.company.company_name)) ||
+                            (req.company.id_company == 0 && string.IsNullOrEmpty(req.company.company_name)))
+                        {
+                            return new returnService { status = false, message = "Cannot update supplier company!" };
+                        }
+                        var data = await context.tbl_suppliers.Where(f => f.id_supplier == req.id_supplier).FirstOrDefaultAsync();
+                        if (data != null)
+                        {
+                            if (req.company.id_company > 0 && string.IsNullOrEmpty(req.company.company_name))
+                            {
+                                data.id_company = req.company.id_company;
+                            }
+                            else
+                            {
+                                var new_company = await _companiesService.AddCompanyNameOnly(context, transaction, req.company.company_name, id_user);
+                                if (new_company != null)
+                                {
+                                    data.id_company = new_company;
+                                }
+                            }
+                            data.updated_at = DateTime.Now;
+                            data.updated_by = id_user;
+                            await context.SaveChangesAsync();
+                        }
+
+                        await transaction.CommitAsync();
+
+                        return new returnService { status = true, message = "User address updated successfully!" };
                     }
                     catch (Exception ex)
                     {

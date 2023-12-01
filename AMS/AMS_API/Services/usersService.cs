@@ -10,11 +10,13 @@ namespace AMS_API.Services
     {
         private readonly IConfiguration _configuration;
         private  locationsServices _locationService;
+        private companiesService _companiesService;
 
         public usersService(IConfiguration configuration)
         {
             _configuration = configuration;
             _locationService = new locationsServices();
+            _companiesService = new companiesService(configuration);
         }
         public async Task<List<vw_users>> getUsers(string search)
         {
@@ -116,6 +118,7 @@ namespace AMS_API.Services
                                 created_at = DateTime.Now,
                                 created_by = req.id_user
                             });
+                            await context.SaveChangesAsync();
                         }
                         await transaction.CommitAsync();
                         return new returnService { status = true, message = "User profile updated successfully!" };
@@ -129,7 +132,7 @@ namespace AMS_API.Services
                 }
             }
         }
-        public async Task<returnService> updateAddress(locations req, int id_user)
+        public async Task<returnService> updateAddress(user_location req, int id_user)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -137,14 +140,16 @@ namespace AMS_API.Services
                 {
                     try
                     {
-                        
-                        int? id_location = await _locationService.createLocation(context, transaction, req, id_user);
+                        int? id_location = await _locationService.createLocation(context, transaction, req.location, id_user);
 
-                        var user_profile = await context.tbl_user_details.Where(f => f.id_user == id_user).FirstOrDefaultAsync();
+                        var user_profile = await context.tbl_user_details.Where(f => f.id_user == req.id_user).FirstOrDefaultAsync();
                         if (user_profile != null && id_location != null)
                         {
                             var old_location = await context.tbl_locations.Where(f => f.id_location == user_profile.id_location).FirstOrDefaultAsync();
-                            context.tbl_locations.Remove(old_location);
+                            if (old_location != null)
+                            {
+                                context.tbl_locations.Remove(old_location);
+                            }
 
                             user_profile.id_location = id_location;
                             user_profile.updated_at = DateTime.Now;
@@ -177,6 +182,52 @@ namespace AMS_API.Services
                 //await context.tbl_locations.AddAsync(locations);
                 //await context.SaveChangesAsync();
                 //id_location = locations.id_location;
+            }
+        }
+        public async Task<returnService> updateCompany(user_company req, int id_user)
+        {
+            using (var context = new AMSDbContext(_configuration))
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        if ((req.company.id_company > 0 && !string.IsNullOrEmpty(req.company.company_name)) || 
+                            (req.company.id_company == 0 && string.IsNullOrEmpty(req.company.company_name)))
+                        {
+                            return new returnService { status = false, message = "Cannot update user company!" };
+                        }
+                        var user_profile = await context.tbl_user_details.Where(f => f.id_user == req.id_user).FirstOrDefaultAsync();
+                        if (user_profile != null)
+                        {
+                            if (req.company.id_company > 0 && string.IsNullOrEmpty(req.company.company_name))
+                            {
+                                user_profile.id_company = req.company.id_company;
+                            }
+                            else
+                            {
+                                var new_company = await _companiesService.AddCompanyNameOnly(context, transaction, req.company.company_name, id_user);
+                                if (new_company != null)
+                                {
+                                    user_profile.id_company = new_company;
+                                }
+                            }
+                            user_profile.updated_at = DateTime.Now;
+                            user_profile.updated_by = id_user;
+                            await context.SaveChangesAsync();
+                        }
+
+                        await transaction.CommitAsync();
+
+                        return new returnService { status = true, message = "User address updated successfully!" };
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        //throw; 
+                        return new returnService { status = false, message = ex.Message };
+                    }
+                }
             }
         }
     }
