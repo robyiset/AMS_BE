@@ -149,6 +149,7 @@ namespace AMS_API.Services
                                 country = req.location.country,
                                 zip = req.location.zip,
                                 id_user = req.id_user,
+                                details = req.location.details
                             },
                             id_user);
 

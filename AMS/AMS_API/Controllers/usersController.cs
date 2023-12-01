@@ -129,7 +129,7 @@ namespace AMS_API.Controllers
             }
             try
             {
-                if (req != null)
+                if (req != null || req.id_user != null || req.id_user > 0)
                 {
                     returnService result = await service.updateAddress(req, Convert.ToInt32(id_user.Value));
                     if (!result.status)

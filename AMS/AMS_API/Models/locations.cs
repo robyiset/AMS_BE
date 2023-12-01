@@ -12,6 +12,7 @@ namespace AMS_API.Models
         public string state { get; set; }
         public string country { get; set; }
         public string zip { get; set; }
+        public string? details { get; set; }
         public int? id_user { get; set; }
         public int? id_company { get; set; }
         public int? id_supplier { get; set; }
@@ -26,5 +27,6 @@ namespace AMS_API.Models
         public string state { get; set; }
         public string country { get; set; }
         public string zip { get; set; }
+        public string? details { get; set; }
     }
 }

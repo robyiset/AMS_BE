@@ -2,6 +2,7 @@
 using AMS_API.Contexts.Tables;
 using AMS_API.Models;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Linq;
 
 namespace AMS_API.Services
 {
@@ -18,6 +19,7 @@ namespace AMS_API.Services
                     state = req.state,
                     country = req.country,
                     zip = req.zip,
+                    details = req.details,
                     id_user = req.id_user,
                     id_company = req.id_company,
                     id_supplier = req.id_supplier,
@@ -30,6 +32,41 @@ namespace AMS_API.Services
                 await context.SaveChangesAsync();
                 await transaction.CommitAsync();
                 return locations.id_location;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw;
+                //return null;
+            }
+        }
+        public async Task<bool> createRangeLocations(AMSDbContext context, IDbContextTransaction? transaction, List<locations> req, int id_user)
+        {
+            try
+            {
+                var location = new List<tbl_locations>();
+                foreach(var item in req)
+                {
+                    location.Add(new tbl_locations
+                    {
+                        address = item.address,
+                        city = item.city,
+                        state = item.state,
+                        country = item.country,
+                        zip = item.zip,
+                        details = item.details,
+                        id_user = item.id_user,
+                        id_company = item.id_company,
+                        id_supplier = item.id_supplier,
+                        id_asset = item.id_asset,
+                        id_usage = item.id_usage,
+                        created_at = DateTime.Now,
+                        created_by = id_user
+                    });
+                }
+                await context.tbl_locations.AddRangeAsync(location);
+                await context.SaveChangesAsync();
+                return true;
             }
             catch (Exception ex)
             {

@@ -2,6 +2,7 @@
 using AMS_API.Contexts.Tables;
 using AMS_API.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace AMS_API.Services
 {
@@ -49,7 +50,7 @@ namespace AMS_API.Services
                 
             }
         }
-        public async Task<returnService> newData(suppliers req)
+        public async Task<returnService> newData(suppliers req, int id_user)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -57,10 +58,6 @@ namespace AMS_API.Services
                 {
                     try
                     {
-                        //if (await context.tbl_suppliers.Where(f => f.company_name.ToLower().Equals(req.company_name.ToLower())).FirstOrDefaultAsync() != null)
-                        //{
-                        //    return new returnService { status = false, message = "company is already registered" };
-                        //}
                         var data = new tbl_suppliers
                         {
                             supplier_name = req.supplier_name,
@@ -69,13 +66,79 @@ namespace AMS_API.Services
                             contact = req.contact,
                             url = req.url,
                             created_at = DateTime.UtcNow,
-                            created_by = req.id_user
+                            created_by = id_user
                         };
                         await context.tbl_suppliers.AddAsync(data);
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
                         return new returnService { status = false, message = "supplier created successfully!" };
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        //throw; 
+                        return new returnService { status = false, message = ex.Message };
+                    }
+                }
+            }
+        }
+        public async Task<returnService> newDataRange(List<AddSupplier> req, int id_user)
+        {
+            using (var context = new AMSDbContext(_configuration))
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var check = await context.tbl_suppliers.Where(f => req.Select(x => x.supplier_name.ToLower()).ToList().Equals(f.supplier_name.ToLower())).Select(f => f.supplier_name).ToListAsync();
+                        var data = new List<tbl_suppliers>();
+                        var checkedReq = req.Where(f => !check.Select(x => x.ToLower()).ToList().Equals(f.supplier_name.ToLower())).ToList();
+                        foreach (var item in checkedReq)
+                        {
+                            data.Add(new tbl_suppliers
+                            {
+                                supplier_name = item.supplier_name,
+                                phone = item.phone,
+                                email = item.email,
+                                contact = item.contact,
+                                url = item.url,
+                                created_at = DateTime.UtcNow,
+                                created_by = id_user
+                            });
+                        }
+                        await context.tbl_suppliers.AddRangeAsync(data);
+                        await context.SaveChangesAsync();
+
+                        var getInserted = await context.tbl_suppliers.Where(f => data.Select(x => x.supplier_name).ToList().Equals(f.supplier_name)).ToListAsync();
+                        var locations = new List<locations>();
+                        foreach (var item in checkedReq)
+                        {
+                            var matching = getInserted.FirstOrDefault(f => f.supplier_name == item.supplier_name);
+                            if (matching != null)
+                            {
+                                locations.Add(new locations
+                                {
+                                    address = item.location.address,
+                                    city = item.location.city,
+                                    state = item.location.state,
+                                    country = item.location.country,
+                                    zip = item.location.zip,
+                                    details = item.location.details,
+                                    id_supplier = matching.id_supplier
+                                });
+                            }
+                        }
+                        if (! await _locationService.createRangeLocations(context, transaction, locations, id_user))
+                        {
+                            await transaction.CommitAsync();
+                            return new returnService { status = false, message = "Failed add new suppliers!" };
+                        }
+                        else
+                        {
+                            await transaction.CommitAsync();
+                            return new returnService { status = false, message = "Created successfully!" + (check.Any() ? " but these suppliers are already registered: " + string.Join(", ", check) : "") };
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -137,6 +200,7 @@ namespace AMS_API.Services
                                 country = req.location.country,
                                 zip = req.location.zip,
                                 id_supplier = req.id_supplier,
+                                details = req.location.details
                             },
                             id_user);
 

@@ -32,7 +32,7 @@ namespace AMS_API.Services
                 }
             }
         }
-        public async Task<returnService> newData(companies req)
+        public async Task<returnService> newData(companies req, int id_user)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -59,6 +59,44 @@ namespace AMS_API.Services
 
                         await transaction.CommitAsync();
                         return new returnService { status = false, message = "company created successfully!" };
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        //throw; 
+                        return new returnService { status = false, message = ex.Message };
+                    }
+                }
+            }
+        }
+        public async Task<returnService> newDataRange(List<AddCompany> req, int id_user)
+        {
+            using (var context = new AMSDbContext(_configuration))
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var check = await context.tbl_companies.Where(f => req.Select(x => x.company_name.ToLower()).ToList().Equals(f.company_name.ToLower())).Select(f => f.company_name).ToListAsync();
+                        List<tbl_companies> data = new List<tbl_companies>();
+                        foreach (var item in req.Where(f => !check.Select(x => x.ToLower()).ToList().Equals(f.company_name.ToLower())).ToList())
+                        {
+                            data.Add(new tbl_companies
+                            {
+                                company_name = item.company_name,
+                                phone = item.phone,
+                                email = item.email,
+                                contact = item.contact,
+                                url = item.url,
+                                created_at = DateTime.UtcNow,
+                                created_by = id_user
+                            });
+                        }
+                        await context.tbl_companies.AddRangeAsync(data);
+                        await context.SaveChangesAsync();
+
+                        await transaction.CommitAsync();
+                        return new returnService { status = false, message = "Created successfully!" + (check.Any() ? " but these companies are already registered: " + string.Join(", ", check) : "") };
                     }
                     catch (Exception ex)
                     {
@@ -120,6 +158,7 @@ namespace AMS_API.Services
                                 country = req.location.country,
                                 zip = req.location.zip,
                                 id_company = req.id_company,
+                                details = req.location.details
                             },
                             id_user);
 

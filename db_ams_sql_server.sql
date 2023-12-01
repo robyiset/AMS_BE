@@ -15,6 +15,7 @@ CREATE TABLE tbl_users
 	deleted bit default 0
 );
 
+
 create table tbl_locations
 (
 	id_location INT IDENTITY(1,1) PRIMARY KEY,
@@ -42,9 +43,9 @@ create table tbl_locations
 
 	CONSTRAINT fk_locations_users FOREIGN KEY (id_user) REFERENCES tbl_users(id_user),
 	CONSTRAINT fk_locations_companies FOREIGN KEY (id_company) REFERENCES tbl_companies(id_company),
-	CONSTRAINT fk_locations_suppliers FOREIGN KEY (id_user) REFERENCES tbl_users(id_supplier),
-	CONSTRAINT fk_locations_assets FOREIGN KEY (id_user) REFERENCES tbl_users(id_asset),
-	CONSTRAINT fk_locations_consumables FOREIGN KEY (id_usage) REFERENCES tbl_users(id_usage),
+	CONSTRAINT fk_locations_suppliers FOREIGN KEY (id_supplier) REFERENCES tbl_suppliers(id_supplier),
+	CONSTRAINT fk_locations_assets FOREIGN KEY (id_asset) REFERENCES tbl_assets(id_asset),
+	CONSTRAINT fk_locations_consumables FOREIGN KEY (id_usage) REFERENCES tbl_consumable_assets(id_usage),
 );
 
 create table tbl_companies
@@ -329,7 +330,7 @@ as
 	from tbl_users a
 		left join tbl_user_details b on a.id_user = b.id_user
 		left join tbl_companies c on b.id_company = c.id_company
-		left join tbl_locations d on b.id_company = d.id_company
+		left join tbl_locations d on a.id_user = d.id_user
 
 );
 

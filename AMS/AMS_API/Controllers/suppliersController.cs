@@ -1,7 +1,6 @@
 ﻿using AMS_API.Models;
 using AMS_API.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AMS_API.Controllers
@@ -30,7 +29,7 @@ namespace AMS_API.Controllers
         }
         [Authorize]
         [HttpPost("newData")]
-        public async Task<IActionResult> newData(suppliers req)
+        public async Task<IActionResult> newData(List<AddSupplier> req)
         {
             if (!ModelState.IsValid)
             {
@@ -45,8 +44,7 @@ namespace AMS_API.Controllers
             {
                 if (req != null)
                 {
-                    req.id_user = Convert.ToInt32(id_user.Value);
-                    returnService result = await service.newData(req);
+                    returnService result = await service.newDataRange(req, Convert.ToInt32(id_user.Value));
                     if (!result.status)
                     {
                         return BadRequest( result.message);
@@ -113,7 +111,7 @@ namespace AMS_API.Controllers
             }
             try
             {
-                if (req != null)
+                if (req != null || req.id_supplier != null || req.id_supplier > 0)
                 {
                     returnService result = await service.updateAddress(req, Convert.ToInt32(id_user.Value));
                     if (!result.status)
