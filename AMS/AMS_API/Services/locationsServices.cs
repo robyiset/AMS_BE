@@ -1,4 +1,5 @@
 ﻿using AMS_API.Contexts;
+using AMS_API.Contexts.Tables;
 using AMS_API.Models;
 using Microsoft.EntityFrameworkCore.Storage;
 

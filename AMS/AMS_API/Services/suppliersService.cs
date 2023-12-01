@@ -1,4 +1,5 @@
 ﻿using AMS_API.Contexts;
+using AMS_API.Contexts.Tables;
 using AMS_API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,10 @@ namespace AMS_API.Services
         private readonly IConfiguration _configuration;
         private readonly locationsServices _locationService;
 
-        public suppliersService(IConfiguration configuration, locationsServices locationService)
+        public suppliersService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _locationService = locationService;
+            _locationService = new locationsServices();
         }
         public async Task<List<suppliers>> getData(string search)
         {

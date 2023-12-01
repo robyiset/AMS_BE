@@ -1,19 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AMS_API.Contexts
+namespace AMS_API.Contexts.Tables
 {
-    public class tbl_requested_assets
+    public class tbl_asset_waranties
     {
         [Key]
-        public int id_request { get; set; }
-        public int id_asset { get; set; }
-        public int? id_user { get; set; }
-        public int? id_company { get; set; }
-        public int? requested_at { get; set; }
-        public int? denied_at { get; set; }
-        [Column(TypeName = "varchar(-1)")]
-        public string notes { get; set; }
+        public int id_warranty { get; set; }
+        [Column(TypeName = "varchar(100)")]
+        public string warranty_name { get; set; }
+        public DateTime? warranty_expiration { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }
         public DateTime? updated_at { get; set; }

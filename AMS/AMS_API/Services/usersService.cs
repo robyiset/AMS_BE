@@ -1,4 +1,6 @@
 ﻿using AMS_API.Contexts;
+using AMS_API.Contexts.Tables;
+using AMS_API.Contexts.Views;
 using AMS_API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,12 +9,22 @@ namespace AMS_API.Services
     public class usersService
     {
         private readonly IConfiguration _configuration;
-        private readonly locationsServices _locationService;
+        private  locationsServices _locationService;
 
-        public usersService(IConfiguration configuration, locationsServices locationService)
+        public usersService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _locationService = locationService;
+            _locationService = new locationsServices();
+        }
+        public async Task<List<vw_users>> getUsers(string search)
+        {
+            using (var context = new AMSDbContext(_configuration))
+            {
+                string _search = search.ToLower();
+                return await context.vw_users.Where(f => f.username.ToLower().Contains(_search) || 
+                f.email.ToLower().Contains(_search) || 
+                (f.first_name + " " + f.last_name).ToLower().Contains(_search)).ToListAsync();
+            }
         }
         public async Task<returnService> register(register req)
         {
@@ -37,7 +49,7 @@ namespace AMS_API.Services
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "User created successfully!" };
+                        return new returnService { status = true, message = "User created successfully!" };
                     }
                     catch (Exception ex)
                     {
@@ -82,7 +94,7 @@ namespace AMS_API.Services
                             });
                         }
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "User profile updated successfully!" };
+                        return new returnService { status = true, message = "User profile updated successfully!" };
                     }
                     catch (Exception ex)
                     {

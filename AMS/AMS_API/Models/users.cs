@@ -9,6 +9,7 @@ namespace AMS_API.Models
     {
 
         [Required(ErrorMessage = "Username is required")]
+        [RegularExpression(@"^[a-zA-Z0-9_]{3,20}$", ErrorMessage = "Username must be 3 to 20 characters long and contain only letters, numbers, and underscores")]
         public string username { get; set; }
 
         [Required(ErrorMessage = "Email is required")]
@@ -22,7 +23,7 @@ namespace AMS_API.Models
         public string password { get; set; }
 
         [Required(ErrorMessage = "Repeat password is required")]
-        [Compare("Password", ErrorMessage = "Passwords do not match")]
+        [Compare("password", ErrorMessage = "Passwords do not match")]
         public string repeat_password { get; set; }
     }
     public class profile
@@ -32,6 +33,7 @@ namespace AMS_API.Models
         public string first_name { get; set; }
         public string last_name { get; set; }
         public string about { get; set; }
+        [RegularExpression(@"^\+?[0-9]{10,15}$", ErrorMessage = "Invalid phone number")]
         public string phone_number { get; set; }
     }
     public class user_details

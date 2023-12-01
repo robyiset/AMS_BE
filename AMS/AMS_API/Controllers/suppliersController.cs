@@ -11,13 +11,13 @@ namespace AMS_API.Controllers
     public class suppliersController : ControllerBase
     {
         private readonly companiesService service;
-        public suppliersController(companiesService _service)
+        public suppliersController(IConfiguration configuration)
         {
-            service = _service;
+            service = new companiesService(configuration);
         }
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> getData(string? search)
+        public async Task<IActionResult> getData(string? search = null)
         {
             try
             {

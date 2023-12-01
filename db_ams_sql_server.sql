@@ -286,3 +286,18 @@ create table tbl_licences
 	CONSTRAINT fk_licenses_users FOREIGN KEY (id_user) REFERENCES tbl_users(id_user),
 	CONSTRAINT fk_licenses_waranties FOREIGN KEY (id_warranty) REFERENCES tbl_asset_waranties(id_warranty),
 );
+
+ALTER VIEW vw_users AS(
+
+	select 
+		a.id_user,
+		a.username,
+		a.email,
+		b.first_name,
+		b.last_name,
+		b.phone_number,
+		b.about
+	from tbl_users a 
+	left join tbl_user_details b on a.id_user = b.id_user
+);
+

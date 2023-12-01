@@ -32,7 +32,7 @@ namespace AMS_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (string.IsNullOrEmpty(req.email) || string.IsNullOrEmpty(req.password) || string.IsNullOrEmpty(req.username))
+            if ((string.IsNullOrEmpty(req.username) && string.IsNullOrEmpty(req.password)) || (string.IsNullOrEmpty(req.email) && string.IsNullOrEmpty(req.password))) 
             {
                 return StatusCode(401, "Login failed");
             }

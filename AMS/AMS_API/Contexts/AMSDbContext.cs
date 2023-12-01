@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AMS_API.Contexts.Tables;
+using AMS_API.Contexts.Views;
+using Microsoft.EntityFrameworkCore;
 
 namespace AMS_API.Contexts
 {
@@ -30,5 +32,7 @@ namespace AMS_API.Contexts
         public DbSet<tbl_asset_logs> tbl_asset_logs { get; set; }
         public DbSet<tbl_licences> tbl_licences { get; set; }
         public DbSet<tbl_suppliers> tbl_suppliers { get; set; }
+        public DbSet<vw_users> vw_users { get; set; }
+        
     }
 }

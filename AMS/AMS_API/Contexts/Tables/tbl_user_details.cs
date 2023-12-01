@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AMS_API.Contexts
+namespace AMS_API.Contexts.Tables
 {
     [Table("tbl_user_details")]
     public class tbl_user_details

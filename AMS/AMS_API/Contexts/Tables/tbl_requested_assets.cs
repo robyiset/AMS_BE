@@ -1,16 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AMS_API.Contexts
+namespace AMS_API.Contexts.Tables
 {
-    public class tbl_asset_types
+    public class tbl_requested_assets
     {
         [Key]
-        public int id_type { get; set; }
-        [Column(TypeName = "varchar(100)")]
-        public string name_type { get; set; }
+        public int id_request { get; set; }
+        public int id_asset { get; set; }
+        public int? id_user { get; set; }
+        public int? id_company { get; set; }
+        public int? requested_at { get; set; }
+        public int? denied_at { get; set; }
         [Column(TypeName = "varchar(-1)")]
-        public string desc_type { get; set; }
+        public string notes { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }
         public DateTime? updated_at { get; set; }

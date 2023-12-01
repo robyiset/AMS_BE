@@ -3,6 +3,7 @@ using AMS_API.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Numerics;
 using System;
+using AMS_API.Contexts.Tables;
 
 namespace AMS_API.Services
 {
@@ -11,10 +12,10 @@ namespace AMS_API.Services
         private readonly IConfiguration _configuration;
         private readonly locationsServices _locationService;
 
-        public companiesService(IConfiguration configuration, locationsServices locationService)
+        public companiesService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _locationService = locationService;
+            _locationService = new locationsServices();
         }
         public async Task<List<companies>> getData(string search)
         {

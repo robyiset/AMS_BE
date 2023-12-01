@@ -1,5 +1,4 @@
-﻿using AMS_API.Contexts;
-using AMS_API.Models;
+﻿using AMS_API.Models;
 using AMS_API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +9,11 @@ namespace AMS_API.Controllers
     [ApiController]
     public class usersController : ControllerBase
     {
-        private readonly usersService service;
+        private usersService service;
 
-        public usersController(usersService _service)
+        public usersController(IConfiguration configuration)
         {
-            service = _service;
+            service = new usersService(configuration);
         }
 
         [AllowAnonymous]
@@ -46,6 +45,19 @@ namespace AMS_API.Controllers
                     return StatusCode(401, "Failed to create user");
                 }
                 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message + "\n" + ex.StackTrace);
+            }
+        }
+        [Authorize]
+        [HttpGet("getUsers")]
+        public async Task<IActionResult> getUsers(string? search = null)
+        {
+            try
+            {
+                return Ok(await service.getUsers(search));
             }
             catch (Exception ex)
             {
