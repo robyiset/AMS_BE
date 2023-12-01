@@ -118,7 +118,6 @@ create table tbl_assets
 	asset_name varchar(100) not null,
 	asset_desc varchar(max),
 	id_type int,
-
 	id_user int,
 
 	purchase_date datetime,
@@ -244,6 +243,7 @@ create table tbl_suppliers
 	url varchar(max),
 
 	id_location int,
+	id_company int,
 
 	created_at datetime default GETDATE(),
 	created_by int,
@@ -253,7 +253,8 @@ create table tbl_suppliers
 	deleted_by int,
 	deleted bit default 0,
 
-	CONSTRAINT fk_suppliers_locations FOREIGN KEY (id_location) REFERENCES tbl_locations(id_location)
+	CONSTRAINT fk_suppliers_locations FOREIGN KEY (id_location) REFERENCES tbl_locations(id_location),
+	CONSTRAINT fk_suppliers_companies FOREIGN KEY (id_company) REFERENCES tbl_companies(id_company)
 );
 
 create table tbl_licences

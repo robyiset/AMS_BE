@@ -53,7 +53,7 @@ namespace AMS_API.Controllers
             }
         }
         [Authorize]
-        [HttpPost("updateProfile")]
+        [HttpPut("updateProfile")]
         public async Task<IActionResult> updateProfile([FromBody] profile req)
         {
             if (!ModelState.IsValid)
@@ -89,7 +89,7 @@ namespace AMS_API.Controllers
         }
 
         [Authorize]
-        [HttpPost("updateAddress")]
+        [HttpPut("updateAddress")]
         public async Task<IActionResult> updateAddress([FromBody] locations req)
         {
             if (!ModelState.IsValid)
@@ -105,8 +105,7 @@ namespace AMS_API.Controllers
             {
                 if (req != null)
                 {
-                    req.id_user = Convert.ToInt32(id_user.Value);
-                    returnService result = await service.updateAddress(req);
+                    returnService result = await service.updateAddress(req, Convert.ToInt32(id_user.Value));
                     if (!result.status)
                     {
                         return StatusCode(401, result.message);

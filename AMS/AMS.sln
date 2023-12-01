@@ -5,8 +5,6 @@ VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AMS_API", "AMS_API\AMS_API.csproj", "{BB87C72E-B964-40F9-8438-649A12059FDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMS_Service_notification", "AMS_Service_notification\AMS_Service_notification.csproj", "{42AF6BE0-1CBA-4F2F-A0C0-D7356D47018A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{BB87C72E-B964-40F9-8438-649A12059FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB87C72E-B964-40F9-8438-649A12059FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB87C72E-B964-40F9-8438-649A12059FDF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42AF6BE0-1CBA-4F2F-A0C0-D7356D47018A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42AF6BE0-1CBA-4F2F-A0C0-D7356D47018A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42AF6BE0-1CBA-4F2F-A0C0-D7356D47018A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42AF6BE0-1CBA-4F2F-A0C0-D7356D47018A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

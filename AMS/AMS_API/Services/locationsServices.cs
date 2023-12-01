@@ -6,7 +6,7 @@ namespace AMS_API.Services
 {
     public class locationsServices
     {
-        public async Task<int?> createLocation(AMSDbContext context, IDbContextTransaction? transaction, locations req)
+        public async Task<int?> createLocation(AMSDbContext context, IDbContextTransaction? transaction, locations req, int id_user)
         {
             try
             {
@@ -18,7 +18,7 @@ namespace AMS_API.Services
                     country = req.country,
                     zip = req.zip,
                     created_at = DateTime.Now,
-                    created_by = req.id_user
+                    created_by = id_user
                 };
                 await context.tbl_locations.AddAsync(locations);
                 await context.SaveChangesAsync();

@@ -18,6 +18,7 @@ namespace AMS_API.Contexts
         [Column(TypeName = "varchar(-1)")]
         public string url { get; set; }
         public int? id_location { get; set; }
+        public int? id_company { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }
         public DateTime? updated_at { get; set; }

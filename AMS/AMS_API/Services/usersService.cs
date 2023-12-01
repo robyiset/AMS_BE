@@ -93,7 +93,7 @@ namespace AMS_API.Services
                 }
             }
         }
-        public async Task<returnService> updateAddress(locations req)
+        public async Task<returnService> updateAddress(locations req, int id_user)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -102,9 +102,9 @@ namespace AMS_API.Services
                     try
                     {
                         
-                        int? id_location = await _locationService.createLocation(context, transaction, req);
+                        int? id_location = await _locationService.createLocation(context, transaction, req, id_user);
 
-                        var user_profile = await context.tbl_user_details.Where(f => f.id_user == req.id_user).FirstOrDefaultAsync();
+                        var user_profile = await context.tbl_user_details.Where(f => f.id_user == id_user).FirstOrDefaultAsync();
                         if (user_profile != null && id_location != null)
                         {
                             var old_location = await context.tbl_locations.Where(f => f.id_location == user_profile.id_location).FirstOrDefaultAsync();
@@ -112,7 +112,7 @@ namespace AMS_API.Services
 
                             user_profile.id_location = id_location;
                             user_profile.updated_at = DateTime.Now;
-                            user_profile.updated_by = req.id_user;
+                            user_profile.updated_by = id_user;
                             await context.SaveChangesAsync();
                         }
 

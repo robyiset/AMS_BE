@@ -1,29 +1,27 @@
 ﻿using AMS_API.Contexts;
 using AMS_API.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Numerics;
-using System;
 
 namespace AMS_API.Services
 {
-    public class companiesService
+    public class suppliersService
     {
         private readonly IConfiguration _configuration;
         private readonly locationsServices _locationService;
 
-        public companiesService(IConfiguration configuration, locationsServices locationService)
+        public suppliersService(IConfiguration configuration, locationsServices locationService)
         {
             _configuration = configuration;
             _locationService = locationService;
         }
-        public async Task<List<companies>> getData(string search)
+        public async Task<List<suppliers>> getData(string search)
         {
             using (var context = new AMSDbContext(_configuration))
             {
-                return await context.tbl_companies.Where(f => f.deleted == false && f.company_name.ToLower().Contains(search.ToLower())).Select(f => new companies 
-                { 
-                    id_company = f.id_company, 
-                    company_name = f.company_name,  
+                return await context.tbl_suppliers.Where(f => f.deleted == false && f.supplier_name.ToLower().Contains(search.ToLower())).Select(f => new suppliers
+                {
+                    id_supplier = f.id_supplier,
+                    supplier_name = f.supplier_name,
                     phone = f.phone,
                     email = f.email,
                     contact = f.contact,
@@ -31,7 +29,7 @@ namespace AMS_API.Services
                 }).ToListAsync();
             }
         }
-        public async Task<returnService> newData(companies req)
+        public async Task<returnService> newData(suppliers req)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -39,13 +37,13 @@ namespace AMS_API.Services
                 {
                     try
                     {
-                        if (await context.tbl_companies.Where(f => f.company_name.ToLower().Equals(req.company_name.ToLower())).FirstOrDefaultAsync() != null)
+                        //if (await context.tbl_suppliers.Where(f => f.company_name.ToLower().Equals(req.company_name.ToLower())).FirstOrDefaultAsync() != null)
+                        //{
+                        //    return new returnService { status = false, message = "company is already registered" };
+                        //}
+                        var data = new tbl_suppliers
                         {
-                            return new returnService { status = false, message = "company is already registered" };
-                        }
-                        var data = new tbl_companies
-                        {
-                            company_name = req.company_name,
+                            supplier_name = req.supplier_name,
                             phone = req.phone,
                             email = req.email,
                             contact = req.contact,
@@ -53,11 +51,11 @@ namespace AMS_API.Services
                             created_at = DateTime.UtcNow,
                             created_by = req.id_user
                         };
-                        await context.tbl_companies.AddAsync(data);
+                        await context.tbl_suppliers.AddAsync(data);
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "company created successfully!" };
+                        return new returnService { status = false, message = "supplier created successfully!" };
                     }
                     catch (Exception ex)
                     {
@@ -68,7 +66,7 @@ namespace AMS_API.Services
                 }
             }
         }
-        public async Task<returnService> updateData(companies req)
+        public async Task<returnService> updateData(suppliers req)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -76,12 +74,12 @@ namespace AMS_API.Services
                 {
                     try
                     {
-                        var data = await context.tbl_companies.Where(f => f.id_company == req.id_company).FirstOrDefaultAsync();
+                        var data = await context.tbl_suppliers.Where(f => f.id_supplier == req.id_supplier).FirstOrDefaultAsync();
                         if (data == null)
                         {
-                            return new returnService { status = false, message = "company is not found" };
+                            return new returnService { status = false, message = "supplier is not found" };
                         }
-                        data.company_name = req.company_name;
+                        data.supplier_name = req.supplier_name;
                         data.phone = req.phone;
                         data.email = req.email;
                         data.contact = req.contact;
@@ -91,7 +89,7 @@ namespace AMS_API.Services
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "company created successfully!" };
+                        return new returnService { status = false, message = "supplier created successfully!" };
                     }
                     catch (Exception ex)
                     {
@@ -102,7 +100,7 @@ namespace AMS_API.Services
                 }
             }
         }
-        public async Task<returnService> updateAddress(locations req, int id_company, int id_user)
+        public async Task<returnService> updateAddress(locations req, int id_supplier, int id_user)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -113,7 +111,7 @@ namespace AMS_API.Services
 
                         int? id_location = await _locationService.createLocation(context, transaction, req, id_user);
 
-                        var data = await context.tbl_companies.Where(f => f.id_company == id_company).FirstOrDefaultAsync();
+                        var data = await context.tbl_suppliers.Where(f => f.id_supplier == id_supplier).FirstOrDefaultAsync();
                         if (data != null && id_location != null)
                         {
                             var old_location = await context.tbl_locations.Where(f => f.id_location == data.id_location).FirstOrDefaultAsync();
@@ -127,7 +125,7 @@ namespace AMS_API.Services
 
                         await transaction.CommitAsync();
 
-                        return new returnService { status = true, message = "Company address updated successfully!" };
+                        return new returnService { status = true, message = "supplier address updated successfully!" };
                     }
                     catch (Exception ex)
                     {
@@ -138,7 +136,7 @@ namespace AMS_API.Services
                 }
             }
         }
-        public async Task<returnService> deleteData(companies req)
+        public async Task<returnService> deleteData(suppliers req)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -146,10 +144,10 @@ namespace AMS_API.Services
                 {
                     try
                     {
-                        var data = await context.tbl_companies.Where(f => f.id_company == req.id_company).FirstOrDefaultAsync();
+                        var data = await context.tbl_suppliers.Where(f => f.id_supplier == req.id_supplier).FirstOrDefaultAsync();
                         if (data == null)
                         {
-                            return new returnService { status = false, message = "company is not found" };
+                            return new returnService { status = false, message = "supplier is not found" };
                         }
                         data.deleted = true;
                         data.deleted_at = DateTime.UtcNow;
@@ -168,7 +166,7 @@ namespace AMS_API.Services
                 }
             }
         }
-        public async Task<returnService> removeData(int? id_company)
+        public async Task<returnService> removeData(int? id_supplier)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -176,12 +174,12 @@ namespace AMS_API.Services
                 {
                     try
                     {
-                        var data = await context.tbl_companies.Where(f => f.id_company == id_company).FirstOrDefaultAsync();
+                        var data = await context.tbl_suppliers.Where(f => f.id_supplier == id_supplier).FirstOrDefaultAsync();
                         if (data == null)
                         {
-                            return new returnService { status = false, message = "company is not found" };
+                            return new returnService { status = false, message = "supplier is not found" };
                         }
-                        context.tbl_companies.Remove(data);
+                        context.tbl_suppliers.Remove(data);
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
