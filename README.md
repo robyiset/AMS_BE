@@ -18,7 +18,7 @@ berikut merupakan desain database pada aplikasi AMS:
 
 ## Cara Penggunaan:
  - Prasyarat: Pastikan sudah terpasang [.NET Core 7.0 SDK](https://dotnet.microsoft.com/download/dotnet/7.0) dan `SQL Server` pada lingkungan pengembangan Anda.
- - Konfigurasi Database: Sesuaikan konfigurasi koneksi database pada `appsettings.json` dengan lingkungan pengembangan Anda.
+ - Konfigurasi Database: Sesuaikan konfigurasi `connectionstring` database pada `appsettings.json` dengan koneksi database Anda.
  - Menjalankan Aplikasi: Jalankan aplikasi AMS pmenggunakan [VS Code](https://code.visualstudio.com/download), `Visual Studio 2022`, atau `terminal` dengan melakukan:
 ```bash
 dotnet restore
