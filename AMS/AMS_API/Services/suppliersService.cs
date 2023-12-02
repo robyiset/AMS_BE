@@ -72,7 +72,7 @@ namespace AMS_API.Services
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "supplier created successfully!" };
+                        return new returnService { status = true, message = "supplier created successfully!" };
                     }
                     catch (Exception ex)
                     {
@@ -93,24 +93,43 @@ namespace AMS_API.Services
                     {
                         var check = await context.tbl_suppliers.Where(f => req.Select(x => x.supplier_name.ToLower()).ToList().Equals(f.supplier_name.ToLower())).Select(f => f.supplier_name).ToListAsync();
                         var data = new List<tbl_suppliers>();
-                        var checkedReq = req.Where(f => !check.Select(x => x.ToLower()).ToList().Equals(f.supplier_name.ToLower())).ToList();
+                        var checkedReq = req.Where(f => !check.Select(x => x.ToLower()).ToList().Contains(f.supplier_name.ToLower())).ToList();
                         foreach (var item in checkedReq)
                         {
-                            data.Add(new tbl_suppliers
+                            if (item.id_company > 0)
                             {
-                                supplier_name = item.supplier_name,
-                                phone = item.phone,
-                                email = item.email,
-                                contact = item.contact,
-                                url = item.url,
-                                created_at = DateTime.UtcNow,
-                                created_by = id_user
-                            });
+                                data.Add(new tbl_suppliers
+                                {
+                                    supplier_name = item.supplier_name,
+                                    phone = item.phone,
+                                    email = item.email,
+                                    contact = item.contact,
+                                    url = item.url,
+                                    id_company = item.id_company,
+                                    created_at = DateTime.UtcNow,
+                                    created_by = id_user
+                                });
+                            }
+                            else
+                            {
+                                
+                                data.Add(new tbl_suppliers
+                                {
+                                    supplier_name = item.supplier_name,
+                                    phone = item.phone,
+                                    email = item.email,
+                                    contact = item.contact,
+                                    url = item.url,
+                                    created_at = DateTime.UtcNow,
+                                    created_by = id_user
+                                });
+                            }
+                            
                         }
                         await context.tbl_suppliers.AddRangeAsync(data);
                         await context.SaveChangesAsync();
 
-                        var getInserted = await context.tbl_suppliers.Where(f => data.Select(x => x.supplier_name).ToList().Equals(f.supplier_name)).ToListAsync();
+                        var getInserted = await context.tbl_suppliers.Where(f => data.Select(x => x.supplier_name).ToList().Contains(f.supplier_name)).ToListAsync();
                         var locations = new List<locations>();
                         foreach (var item in checkedReq)
                         {
@@ -137,7 +156,7 @@ namespace AMS_API.Services
                         else
                         {
                             await transaction.CommitAsync();
-                            return new returnService { status = false, message = "Created successfully!" + (check.Any() ? " but these suppliers are already registered: " + string.Join(", ", check) : "") };
+                            return new returnService { status = true, message = "Created successfully!" + (check.Any() ? " but these suppliers are already registered: " + string.Join(", ", check) : "") };
                         }
                     }
                     catch (Exception ex)
@@ -172,7 +191,7 @@ namespace AMS_API.Services
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "supplier created successfully!" };
+                        return new returnService { status = true, message = "supplier created successfully!" };
                     }
                     catch (Exception ex)
                     {
@@ -191,6 +210,12 @@ namespace AMS_API.Services
                 {
                     try
                     {
+
+                        var loc_check = await context.tbl_locations.Where(f => f.id_supplier == req.id_supplier).FirstOrDefaultAsync();
+                        if (loc_check != null)
+                        {
+                            _locationService.deleteLocation(context, transaction, loc_check);
+                        }
                         int? id_location = await _locationService.createLocation(context, transaction,
                             new locations
                             {
@@ -206,7 +231,7 @@ namespace AMS_API.Services
 
                         if (id_location == null || id_location == 0)
                         {
-                            return new returnService { status = true, message = "Failed to update supplier address!" };
+                            return new returnService { status = false, message = "Failed to update supplier address!" };
                         }
 
                         return new returnService { status = true, message = "supplier address updated successfully!" };
@@ -265,7 +290,7 @@ namespace AMS_API.Services
                 }
             }
         }
-        public async Task<returnService> deleteData(suppliers req)
+        public async Task<returnService> deleteData(int id_supplier, int id_user)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -273,18 +298,18 @@ namespace AMS_API.Services
                 {
                     try
                     {
-                        var data = await context.tbl_suppliers.Where(f => f.id_supplier == req.id_supplier).FirstOrDefaultAsync();
+                        var data = await context.tbl_suppliers.Where(f => f.id_supplier == id_supplier).FirstOrDefaultAsync();
                         if (data == null)
                         {
                             return new returnService { status = false, message = "supplier is not found" };
                         }
                         data.deleted = true;
                         data.deleted_at = DateTime.UtcNow;
-                        data.deleted_by = req.id_user;
+                        data.deleted_by = id_user;
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "deleted!" };
+                        return new returnService { status = true, message = "deleted!" };
                     }
                     catch (Exception ex)
                     {
@@ -308,11 +333,17 @@ namespace AMS_API.Services
                         {
                             return new returnService { status = false, message = "supplier is not found" };
                         }
+
+                        var loc_check = await context.tbl_locations.Where(f => f.id_company == data.id_company).FirstOrDefaultAsync();
+                        if (loc_check != null)
+                        {
+                            _locationService.deleteLocation(context, transaction, loc_check);
+                        }
                         context.tbl_suppliers.Remove(data);
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "removed!" };
+                        return new returnService { status = true, message = "removed!" };
                     }
                     catch (Exception ex)
                     {

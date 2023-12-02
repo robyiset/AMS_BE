@@ -12,7 +12,6 @@ namespace AMS_API.Contexts.Tables
         public string? title { get; set; }
         [Column(TypeName = "varchar(-1)")]
         public string? maintenance_desc { get; set; }
-        public int? id_warranty { get; set; }
         public DateTime? start_date { get; set; }
         public DateTime? completion_date { get; set; }
         public int? maintenance_time { get; set; }

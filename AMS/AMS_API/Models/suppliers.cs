@@ -23,8 +23,8 @@ namespace AMS_API.Models
         public string email { get; set; }
         public string contact { get; set; }
         public string url { get; set; }
+        public int id_company { get; set; }
         public add_location location { get; set; }
-        public SelectOrAddCompany company { get; set; }
     }
     public class supplier_company
     {

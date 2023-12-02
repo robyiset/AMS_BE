@@ -132,7 +132,7 @@ namespace AMS_API.Controllers
         }
         [Authorize]
         [HttpPut("deleteData")]
-        public async Task<IActionResult> deleteData(suppliers req)
+        public async Task<IActionResult> deleteData(int id_supplier)
         {
             if (!ModelState.IsValid)
             {
@@ -145,10 +145,9 @@ namespace AMS_API.Controllers
             }
             try
             {
-                if (req != null)
+                if (id_supplier != null || id_supplier > 0)
                 {
-                    req.id_user = Convert.ToInt32(id_user.Value);
-                    returnService result = await service.deleteData(req);
+                    returnService result = await service.deleteData(id_supplier, Convert.ToInt32(id_user.Value));
                     if (!result.status)
                     {
                         return BadRequest( result.message);

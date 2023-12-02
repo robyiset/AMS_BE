@@ -22,7 +22,6 @@ namespace AMS_API.Contexts.Tables
         public decimal? purchase_cost { get; set; }
         public DateTime? expired_date { get; set; }
         public DateTime? termination_date { get; set; }
-        public int? id_warranty { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }
         public DateTime? updated_at { get; set; }

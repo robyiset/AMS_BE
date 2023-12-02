@@ -25,6 +25,7 @@ namespace AMS_API.Contexts.Tables
         public int? id_supplier { get; set; }
         public int? id_asset { get; set; }
         public int? id_usage { get; set; }
+        public int? id_maintenance { get; set; }
         public DateTime? created_at { get; set; }
         public int? created_by { get; set; }
         public DateTime? updated_at { get; set; }

@@ -1,19 +1,18 @@
 ﻿using AMS_API.Models;
 using AMS_API.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AMS_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class companiesController : ControllerBase
+    public class assetTypeController : ControllerBase
     {
-        private readonly companiesService service;
-        public companiesController(IConfiguration configuration)
+        private readonly assetTypeService service;
+        public assetTypeController(IConfiguration configuration)
         {
-            service = new companiesService(configuration);
+            service = new assetTypeService(configuration);
         }
         [Authorize]
         [HttpGet]
@@ -29,42 +28,8 @@ namespace AMS_API.Controllers
             }
         }
         [Authorize]
-        [HttpPost("newData")]
-        public async Task<IActionResult> newData(List<AddCompany> req)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
-            if (id_user == null && !int.TryParse(id_user.Value, out int userId))
-            {
-                return BadRequest( "User ID not found in token");
-            }
-            try
-            {
-                if (req.Any())
-                {
-                    returnService result = await service.newDataRange(req, Convert.ToInt32(id_user.Value));
-                    if (!result.status)
-                    {
-                        return BadRequest( result.message);
-                    }
-                    return Ok(result.message);
-                }
-                else
-                {
-                    return BadRequest( "Failed to create new company");
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-        [Authorize]
-        [HttpPost("newListCompanyWithNameOnly")]
-        public async Task<IActionResult> newListCompanyWithNameOnly(List<string> req)
+        [HttpPost("AddAssetType")]
+        public async Task<IActionResult> AddAssetType(add_asset_type req)
         {
             if (!ModelState.IsValid)
             {
@@ -77,9 +42,9 @@ namespace AMS_API.Controllers
             }
             try
             {
-                if (req.Any())
+                if (req != null)
                 {
-                    returnService result = await service.AddRangeCompanyNameOnly(req, Convert.ToInt32(id_user.Value));
+                    returnService result = await service.NewAssetType(req, Convert.ToInt32(id_user.Value));
                     if (!result.status)
                     {
                         return BadRequest(result.message);
@@ -88,7 +53,7 @@ namespace AMS_API.Controllers
                 }
                 else
                 {
-                    return BadRequest("Failed to create new company");
+                    return BadRequest("Failed to create new type of asset");
                 }
             }
             catch (Exception ex)
@@ -96,10 +61,9 @@ namespace AMS_API.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
         [Authorize]
-        [HttpPost("newDataWithNameOnly")]
-        public async Task<IActionResult> newDataWithNameOnly(string company_name)
+        [HttpPost("AddRangeAssetType")]
+        public async Task<IActionResult> AddRangeAssetType(List<add_asset_type> req)
         {
             if (!ModelState.IsValid)
             {
@@ -112,9 +76,9 @@ namespace AMS_API.Controllers
             }
             try
             {
-                if (string.IsNullOrEmpty(company_name))
+                if (req != null)
                 {
-                    returnService result = await service.newDataWithNameOnly(company_name, Convert.ToInt32(id_user.Value));
+                    returnService result = await service.AddRangeAssetType(req, Convert.ToInt32(id_user.Value));
                     if (!result.status)
                     {
                         return BadRequest(result.message);
@@ -123,7 +87,7 @@ namespace AMS_API.Controllers
                 }
                 else
                 {
-                    return BadRequest("Failed to create new company");
+                    return BadRequest("Failed to create list type of assets");
                 }
             }
             catch (Exception ex)
@@ -133,7 +97,7 @@ namespace AMS_API.Controllers
         }
         [Authorize]
         [HttpPut("updateData")]
-        public async Task<IActionResult> updateData(companies req)
+        public async Task<IActionResult> updateData(asset_type req)
         {
             if (!ModelState.IsValid)
             {
@@ -142,7 +106,7 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return BadRequest( "User ID not found in token");
+                return BadRequest("User ID not found in token");
             }
             try
             {
@@ -152,47 +116,13 @@ namespace AMS_API.Controllers
                     returnService result = await service.updateData(req);
                     if (!result.status)
                     {
-                        return BadRequest( result.message);
+                        return BadRequest(result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return BadRequest( "Failed to create new company");
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-        [Authorize]
-        [HttpPut("updateAddress")]
-        public async Task<IActionResult> updateAddress(company_location req)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
-            if (id_user == null && !int.TryParse(id_user.Value, out int userId))
-            {
-                return BadRequest( "User ID not found in token");
-            }
-            try
-            {
-                if (req != null || req.id_company != null || req.id_company > 0)
-                {
-                    returnService result = await service.updateAddress(req, Convert.ToInt32(id_user.Value));
-                    if (!result.status)
-                    {
-                        return BadRequest( result.message);
-                    }
-                    return Ok(result.message);
-                }
-                else
-                {
-                    return BadRequest( "Failed to update company address");
+                    return BadRequest("Failed to create new company");
                 }
             }
             catch (Exception ex)
@@ -202,7 +132,7 @@ namespace AMS_API.Controllers
         }
         [Authorize]
         [HttpPut("deleteData")]
-        public async Task<IActionResult> deleteData(int id_company)
+        public async Task<IActionResult> deleteData(asset_type req)
         {
             if (!ModelState.IsValid)
             {
@@ -211,22 +141,23 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return BadRequest( "User ID not found in token");
+                return BadRequest("User ID not found in token");
             }
             try
             {
-                if (id_company != null || id_company > 0)
+                if (req != null)
                 {
-                    returnService result = await service.deleteData(id_company, Convert.ToInt32(id_user.Value));
+                    req.id_user = Convert.ToInt32(id_user.Value);
+                    returnService result = await service.deleteData(req);
                     if (!result.status)
                     {
-                        return BadRequest( result.message);
+                        return BadRequest(result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return BadRequest( "Failed to delete company");
+                    return BadRequest("Failed to delete type of asset");
                 }
             }
             catch (Exception ex)
@@ -236,7 +167,7 @@ namespace AMS_API.Controllers
         }
         [Authorize]
         [HttpDelete("removeData")]
-        public async Task<IActionResult> removeData(int? id_company)
+        public async Task<IActionResult> removeData(int? id_type)
         {
             if (!ModelState.IsValid)
             {
@@ -245,22 +176,22 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return BadRequest( "User ID not found in token");
+                return BadRequest("User ID not found in token");
             }
             try
             {
-                if (id_company != null || id_company > 0)
+                if (id_type != null)
                 {
-                    returnService result = await service.removeData(id_company);
+                    returnService result = await service.removeData(id_type);
                     if (!result.status)
                     {
-                        return BadRequest( result.message);
+                        return BadRequest(result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return BadRequest( "Failed to remove company");
+                    return BadRequest("Failed to remove type of asset");
                 }
             }
             catch (Exception ex)

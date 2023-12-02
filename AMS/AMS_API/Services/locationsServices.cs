@@ -30,7 +30,6 @@ namespace AMS_API.Services
                 };
                 await context.tbl_locations.AddAsync(locations);
                 await context.SaveChangesAsync();
-                await transaction.CommitAsync();
                 return locations.id_location;
             }
             catch (Exception ex)
@@ -65,6 +64,22 @@ namespace AMS_API.Services
                     });
                 }
                 await context.tbl_locations.AddRangeAsync(location);
+                await context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw;
+                //return null;
+            }
+        }
+
+        public async Task<bool?> deleteLocation(AMSDbContext context, IDbContextTransaction? transaction, tbl_locations data)
+        {
+            try
+            {
+                context.tbl_locations.Remove(data);
                 await context.SaveChangesAsync();
                 return true;
             }

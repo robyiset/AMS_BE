@@ -1,18 +1,19 @@
 ﻿using AMS_API.Models;
 using AMS_API.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AMS_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class assetsController : ControllerBase
+    public class licencesController : ControllerBase
     {
-        private readonly assetsService service;
-        public assetsController(IConfiguration configuration)
+        private readonly licenseService service;
+        public licencesController(IConfiguration configuration)
         {
-            service = new assetsService(configuration);
+            service = new licenseService(configuration);
         }
         [Authorize]
         [HttpGet]
@@ -29,7 +30,7 @@ namespace AMS_API.Controllers
         }
         [Authorize]
         [HttpPost("newData")]
-        public async Task<IActionResult> newData(new_asset req)
+        public async Task<IActionResult> newData(add_license req)
         {
             if (!ModelState.IsValid)
             {
@@ -38,7 +39,7 @@ namespace AMS_API.Controllers
             var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
             if (id_user == null && !int.TryParse(id_user.Value, out int userId))
             {
-                return BadRequest( "User ID not found in token");
+                return BadRequest("User ID not found in token");
             }
             try
             {
@@ -47,13 +48,13 @@ namespace AMS_API.Controllers
                     returnService result = await service.newData(req, Convert.ToInt32(id_user.Value));
                     if (!result.status)
                     {
-                        return BadRequest( result.message);
+                        return BadRequest(result.message);
                     }
                     return Ok(result.message);
                 }
                 else
                 {
-                    return BadRequest( "Failed to create new asset");
+                    return BadRequest("Failed to create license");
                 }
             }
             catch (Exception ex)
@@ -61,10 +62,9 @@ namespace AMS_API.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
         [Authorize]
-        [HttpPut("updateAsset")]
-        public async Task<IActionResult> updateAsset(update_asset req)
+        [HttpPut("updateData")]
+        public async Task<IActionResult> updateData(update_license req)
         {
             if (!ModelState.IsValid)
             {
@@ -79,7 +79,7 @@ namespace AMS_API.Controllers
             {
                 if (req != null)
                 {
-                    returnService result = await service.updateAsset(req, Convert.ToInt32(id_user.Value));
+                    returnService result = await service.updateData(req, Convert.ToInt32(id_user.Value));
                     if (!result.status)
                     {
                         return BadRequest(result.message);
@@ -88,110 +88,7 @@ namespace AMS_API.Controllers
                 }
                 else
                 {
-                    return BadRequest("Failed to update asset's warranty");
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [Authorize]
-        [HttpPut("updateWarranty")]
-        public async Task<IActionResult> updateWarranty(update_asset_warranty req)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
-            if (id_user == null && !int.TryParse(id_user.Value, out int userId))
-            {
-                return BadRequest("User ID not found in token");
-            }
-            try
-            {
-                if (req != null)
-                {
-                    returnService result = await service.update_warranty(req, Convert.ToInt32(id_user.Value));
-                    if (!result.status)
-                    {
-                        return BadRequest(result.message);
-                    }
-                    return Ok(result.message);
-                }
-                else
-                {
-                    return BadRequest("Failed to update asset's warranty");
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-        [Authorize]
-        [HttpPut("requestable")]
-        public async Task<IActionResult> requestable(activation_asset req)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
-            if (id_user == null && !int.TryParse(id_user.Value, out int userId))
-            {
-                return BadRequest("User ID not found in token");
-            }
-            try
-            {
-                if (req != null)
-                {
-                    returnService result = await service.requestable(req, Convert.ToInt32(id_user.Value));
-                    if (!result.status)
-                    {
-                        return BadRequest(result.message);
-                    }
-                    return Ok(result.message);
-                }
-                else
-                {
-                    return BadRequest("Failed to update requestable asset");
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-        [Authorize]
-        [HttpPut("consumable")]
-        public async Task<IActionResult> consumable(activation_asset req)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
-            if (id_user == null && !int.TryParse(id_user.Value, out int userId))
-            {
-                return BadRequest("User ID not found in token");
-            }
-            try
-            {
-                if (req != null)
-                {
-                    returnService result = await service.consumable(req, Convert.ToInt32(id_user.Value));
-                    if (!result.status)
-                    {
-                        return BadRequest(result.message);
-                    }
-                    return Ok(result.message);
-                }
-                else
-                {
-                    return BadRequest("Failed to update consumable asset");
+                    return BadRequest("Failed to update license");
                 }
             }
             catch (Exception ex)
@@ -201,7 +98,7 @@ namespace AMS_API.Controllers
         }
         [Authorize]
         [HttpPut("deleteData")]
-        public async Task<IActionResult> deleteData(int id_asset)
+        public async Task<IActionResult> deleteData(int id_license)
         {
             if (!ModelState.IsValid)
             {
@@ -214,9 +111,9 @@ namespace AMS_API.Controllers
             }
             try
             {
-                if (id_asset != null || id_asset > 0)
+                if (id_license != null || id_license > 0)
                 {
-                    returnService result = await service.deleteData(id_asset, Convert.ToInt32(id_user.Value));
+                    returnService result = await service.deleteData(id_license, Convert.ToInt32(id_user.Value));
                     if (!result.status)
                     {
                         return BadRequest(result.message);
@@ -225,7 +122,41 @@ namespace AMS_API.Controllers
                 }
                 else
                 {
-                    return BadRequest("Failed to delete company");
+                    return BadRequest("Failed to delete license");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [Authorize]
+        [HttpDelete("removeData")]
+        public async Task<IActionResult> removeData(int? id_license)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var id_user = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id_user");
+            if (id_user == null && !int.TryParse(id_user.Value, out int userId))
+            {
+                return BadRequest("User ID not found in token");
+            }
+            try
+            {
+                if (id_license != null || id_license > 0)
+                {
+                    returnService result = await service.removeData(id_license);
+                    if (!result.status)
+                    {
+                        return BadRequest(result.message);
+                    }
+                    return Ok(result.message);
+                }
+                else
+                {
+                    return BadRequest("Failed to remove license");
                 }
             }
             catch (Exception ex)

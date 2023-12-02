@@ -140,6 +140,12 @@ namespace AMS_API.Services
                 {
                     try
                     {
+
+                        var loc_check = await context.tbl_locations.Where(f => f.id_user == id_user).FirstOrDefaultAsync();
+                        if (loc_check != null)
+                        {
+                            _locationService.deleteLocation(context, transaction, loc_check);
+                        }
                         int? id_location = await _locationService.createLocation(context, transaction, 
                             new locations 
                             {
@@ -155,13 +161,16 @@ namespace AMS_API.Services
 
                         if (id_location == null || id_location == 0)
                         {
-                            return new returnService { status = true, message = "Failed to update user address!" };
+                            await transaction.RollbackAsync();
+                            return new returnService { status = false, message = "Failed to update user address!" };
                         }
 
+                        await transaction.CommitAsync();
                         return new returnService { status = true, message = "User address updated successfully!" };
                     }
                     catch (Exception ex)
                     {
+                        await transaction.RollbackAsync();
                         //throw; 
                         return new returnService { status = false, message = ex.Message };
                     }

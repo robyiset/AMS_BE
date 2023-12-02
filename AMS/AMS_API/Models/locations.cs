@@ -18,6 +18,7 @@ namespace AMS_API.Models
         public int? id_supplier { get; set; }
         public int? id_asset { get; set; }
         public int? id_usage { get; set; }
+        public int? id_maintenance { get; set; }
     }
     public class add_location
     {

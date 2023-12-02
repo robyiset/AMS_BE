@@ -52,13 +52,13 @@ namespace AMS_API.Services
                             contact = req.contact,
                             url = req.url,
                             created_at = DateTime.UtcNow,
-                            created_by = req.id_user
+                            created_by = id_user
                         };
                         await context.tbl_companies.AddAsync(data);
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "company created successfully!" };
+                        return new returnService { status = true, message = "company created successfully!" };
                     }
                     catch (Exception ex)
                     {
@@ -79,7 +79,8 @@ namespace AMS_API.Services
                     {
                         var check = await context.tbl_companies.Where(f => req.Select(x => x.company_name.ToLower()).ToList().Equals(f.company_name.ToLower())).Select(f => f.company_name).ToListAsync();
                         List<tbl_companies> data = new List<tbl_companies>();
-                        foreach (var item in req.Where(f => !check.Select(x => x.ToLower()).ToList().Equals(f.company_name.ToLower())).ToList())
+                        var checkedReq = req.Where(f => !check.Select(x => x.ToLower()).ToList().Contains(f.company_name.ToLower())).ToList();
+                        foreach (var item in checkedReq)
                         {
                             data.Add(new tbl_companies
                             {
@@ -95,8 +96,36 @@ namespace AMS_API.Services
                         await context.tbl_companies.AddRangeAsync(data);
                         await context.SaveChangesAsync();
 
-                        await transaction.CommitAsync();
-                        return new returnService { status = false, message = "Created successfully!" + (check.Any() ? " but these companies are already registered: " + string.Join(", ", check) : "") };
+                        var getInserted = await context.tbl_companies.Where(f => data.Select(x => x.company_name).ToList().Contains(f.company_name)).ToListAsync();
+                        var locations = new List<locations>();
+                        foreach (var item in checkedReq)
+                        {
+                            var matching = getInserted.FirstOrDefault(f => f.company_name == item.company_name);
+                            if (matching != null)
+                            {
+                                locations.Add(new locations
+                                {
+                                    address = item.location.address,
+                                    city = item.location.city,
+                                    state = item.location.state,
+                                    country = item.location.country,
+                                    zip = item.location.zip,
+                                    details = item.location.details,
+                                    id_company = matching.id_company
+                                });
+                            }
+                        }
+                        if (!await _locationService.createRangeLocations(context, transaction, locations, id_user))
+                        {
+                            await transaction.CommitAsync();
+                            return new returnService { status = false, message = "Failed add new company!" };
+                        }
+                        else
+                        {
+                            await transaction.CommitAsync();
+                            return new returnService { status = true, message = "Created successfully!" + (check.Any() ? " but these companies are already registered: " + string.Join(", ", check) : "") };
+                        }
+
                     }
                     catch (Exception ex)
                     {
@@ -106,6 +135,72 @@ namespace AMS_API.Services
                     }
                 }
             }
+        }
+        public async Task<returnService> newDataWithNameOnly(string company_name, int id_user)
+        {
+            using (var context = new AMSDbContext(_configuration))
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        if (await context.tbl_companies.Where(f => f.company_name.ToLower().Equals(company_name.ToLower())).FirstOrDefaultAsync() != null)
+                        {
+                            return new returnService { status = false, message = "company is already registered" };
+                        }
+                        var data = new tbl_companies
+                        {
+                            company_name = company_name,
+                            created_at = DateTime.UtcNow,
+                            created_by = id_user
+                        };
+                        await context.tbl_companies.AddAsync(data);
+                        await context.SaveChangesAsync();
+
+                        await transaction.CommitAsync();
+                        return new returnService { status = true, message = "company created successfully!" };
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        //throw; 
+                        return new returnService { status = false, message = ex.Message };
+                    }
+                }
+            }
+        }
+        public async Task<returnService> AddRangeCompanyNameOnly(List<string> name, int id_user)
+        {
+            using (var context = new AMSDbContext(_configuration))
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var locations = new List<tbl_companies>();
+                        foreach (var item in name)
+                        {
+                            locations.Add(new tbl_companies
+                            {
+                                company_name = item,
+                                created_at = DateTime.Now,
+                                created_by = id_user
+                            });
+                        }
+                        await context.tbl_companies.AddRangeAsync(locations);
+                        await context.SaveChangesAsync();
+                        await transaction.CommitAsync(); 
+                        return new returnService { status = true, message = "company created successfully!" };
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        //throw;
+                        return new returnService { status = false, message = ex.Message };
+                    }
+                }
+            }
+            
         }
         public async Task<returnService> updateData(companies req)
         {
@@ -130,7 +225,7 @@ namespace AMS_API.Services
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "company created successfully!" };
+                        return new returnService { status = true, message = "company created successfully!" };
                     }
                     catch (Exception ex)
                     {
@@ -149,6 +244,12 @@ namespace AMS_API.Services
                 {
                     try
                     {
+
+                        var loc_check = await context.tbl_locations.Where(f => f.id_company == req.id_company).FirstOrDefaultAsync();
+                        if (loc_check != null)
+                        {
+                            _locationService.deleteLocation(context, transaction, loc_check);
+                        }
                         int? id_location = await _locationService.createLocation(context, transaction,
                             new locations
                             {
@@ -164,20 +265,26 @@ namespace AMS_API.Services
 
                         if (id_location == null || id_location == 0)
                         {
-                            return new returnService { status = true, message = "Failed to update company address!" };
+                            await transaction.CommitAsync();
+                            return new returnService { status = false, message = "Failed to update company address!" };
+                        }
+                        else
+                        {
+                            await transaction.CommitAsync();
+                            return new returnService { status = true, message = "company address updated successfully!" };
                         }
 
-                        return new returnService { status = true, message = "company address updated successfully!" };
                     }
                     catch (Exception ex)
                     {
+                        await transaction.CommitAsync();
                         //throw; 
                         return new returnService { status = false, message = ex.Message };
                     }
                 }
             }
         }
-        public async Task<returnService> deleteData(companies req)
+        public async Task<returnService> deleteData(int id_company, int id_user)
         {
             using (var context = new AMSDbContext(_configuration))
             {
@@ -185,18 +292,18 @@ namespace AMS_API.Services
                 {
                     try
                     {
-                        var data = await context.tbl_companies.Where(f => f.id_company == req.id_company).FirstOrDefaultAsync();
+                        var data = await context.tbl_companies.Where(f => f.id_company == id_company).FirstOrDefaultAsync();
                         if (data == null)
                         {
                             return new returnService { status = false, message = "company is not found" };
                         }
                         data.deleted = true;
                         data.deleted_at = DateTime.UtcNow;
-                        data.deleted_by = req.id_user;
+                        data.deleted_by = id_user;
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "deleted!" };
+                        return new returnService { status = true, message = "deleted!" };
                     }
                     catch (Exception ex)
                     {
@@ -220,11 +327,16 @@ namespace AMS_API.Services
                         {
                             return new returnService { status = false, message = "company is not found" };
                         }
+                        var loc_check = await context.tbl_locations.Where(f => f.id_company == data.id_company).FirstOrDefaultAsync();
+                        if (loc_check != null)
+                        {
+                            _locationService.deleteLocation(context, transaction, loc_check);
+                        }
                         context.tbl_companies.Remove(data);
                         await context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
-                        return new returnService { status = false, message = "removed!" };
+                        return new returnService { status = true, message = "removed!" };
                     }
                     catch (Exception ex)
                     {
@@ -256,5 +368,6 @@ namespace AMS_API.Services
                 //return null;
             }
         }
+        
     }
 }

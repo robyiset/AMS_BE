@@ -32,5 +32,6 @@ namespace AMS_API.Contexts.Tables
         public DateTime? deleted_at { get; set; }
         public int? deleted_by { get; set; }
         public bool? deleted { get; set; }
+        public DateTime? warranty_expiration { get; set; }
     }
 }

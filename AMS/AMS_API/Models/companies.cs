@@ -22,6 +22,7 @@ namespace AMS_API.Models
         public string email { get; set; }
         public string contact { get; set; }
         public string url { get; set; }
+        public add_location location { get; set; }
     }
     public class company_location
     {
