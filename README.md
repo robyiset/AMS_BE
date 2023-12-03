@@ -3,7 +3,7 @@ Aplikasi AMS (Assets/Licenses Management System) adalah sebuah sistem manajemen 
 
 ### Database design
 berikut merupakan desain database pada aplikasi AMS:
-![preview](https://github.com/robyiset/AMS_BE/blob/main/database_table_design.jpg)
+![preview](https://github.com/robyiset/AMS_BE/blob/main/database_table_design.png)
 
 ## Fitur Utama
  - Manajemen Aset: Aplikasi ini memungkinkan pengguna untuk mengelola aset-aset perusahaan dengan lebih efisien, melacak informasi, status, dan detail aset secara terperinci.
