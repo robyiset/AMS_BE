@@ -7,10 +7,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["AMS_API/AMS_API.csproj", "AMS_API/"]
+COPY ["AMS_API.csproj", "AMS_API/"]
 RUN dotnet restore "AMS_API/AMS_API.csproj"
-COPY . .
 WORKDIR "/src/AMS_API"
+COPY . .
 RUN dotnet build "AMS_API.csproj" -c Release -o /app/build
 
 FROM build AS publish
